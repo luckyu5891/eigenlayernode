@@ -1,0 +1,10 @@
+{
+  "name": "church-campus-site",
+  "version": "1.0.0",
+  "description": "Interactive church campus website: map landing page, games, treasure hunt, prayer wall.",
+  "private": true,
+  "scripts": {
+    "start": "node serve.js"
+  },
+  "license": "MIT"
+}

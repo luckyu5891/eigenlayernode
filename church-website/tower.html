@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bell Tower Treasure Hunt · {church}</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,500&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="tower">
+<main class="wrap">
+  <section class="page-hero">
+    <div class="breadcrumb"><a href="index.html">Back to Campus Map</a></div>
+    <div class="eyebrow">Bell Tower</div>
+    <h1>The Campus Treasure Hunt</h1>
+    <p class="lead">Six relics are hidden around the campus. Each clue points to one building. Read the clue, head back to the map, and tap the building you think is right. Every relic reveals one word of a hidden verse.</p>
+  </section>
+
+  <section class="grid cols-2">
+    <div class="card">
+      <h2 id="th-title">Ready to search?</h2>
+      <div class="progress" style="margin:10px 0"><span id="th-bar" style="width:0%"></span></div>
+      <p class="small muted"><span id="th-count">0</span> of <span id="th-total">6</span> relics found</p>
+      <div id="th-current" class="card sand" style="margin:14px 0">
+        <strong class="small" style="letter-spacing:.1em;text-transform:uppercase;color:var(--terracotta)">Current clue</strong>
+        <p class="verse" id="th-clue" style="font-size:1.15rem;margin:6px 0 0"></p>
+      </div>
+      <div id="th-finished" class="card sand hidden" style="margin:14px 0">
+        <strong class="small" style="letter-spacing:.1em;text-transform:uppercase;color:var(--terracotta)">Hidden verse revealed</strong>
+        <p class="verse" style="margin:6px 0 0">Seek and you will find.<br><span class="verse-ref">Matthew 7:7</span></p>
+      </div>
+      <div class="btn-row">
+        <a class="btn gold" id="th-go" href="index.html?hunt=1">Start the hunt on the map</a>
+        <button class="btn ghost sm" type="button" id="th-reset">Reset hunt</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Relics collected</h2>
+      <div class="passport-grid" id="th-relics"></div>
+      <p class="small muted">Hidden words appear here as you find each relic.</p>
+      <p class="verse" id="th-words" style="font-size:1.1rem"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card forest">
+      <h2>How it works</h2>
+      <ol style="padding-left:20px;margin:0">
+        <li>Read the clue above. It always describes one of the six buildings.</li>
+        <li>Press <strong>Start the hunt on the map</strong>. The clue follows you to the campus map.</li>
+        <li>Tap the building you think matches. A wrong guess just wobbles. A right guess reveals the relic and the next clue.</li>
+        <li>Find all six to reveal the hidden verse and earn the Bell Tower stamp.</li>
+      </ol>
+      <p class="small" style="margin-top:12px;opacity:.85">Stuck? The Hint button on the map gives a nudge. Progress is saved, so you can pause and come back.</p>
+    </div>
+  </section>
+</main>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/tower.js"></script>
+</body>
+</html>

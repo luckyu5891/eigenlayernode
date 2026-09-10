@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Children's Wing · {church}</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,500&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="kids">
+<main class="wrap">
+  <section class="page-hero">
+    <div class="breadcrumb"><a href="index.html">Back to Campus Map</a></div>
+    <div class="eyebrow">Children's Wing</div>
+    <h1>Kids Zone</h1>
+    <p class="lead">Big buttons, bright colors, and two activities made for small hands. Win the memory game or finish a coloring page to earn the stamp.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Kids activities">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="tab-memory" id="tabbtn-memory">🐘 Noah's Ark Memory</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tab-color" id="tabbtn-color">🎨 Coloring Book</button>
+  </div>
+
+  <section class="tab-panel card" id="tab-memory" role="tabpanel" aria-labelledby="tabbtn-memory">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center">
+      <div><h2>Noah's Ark Memory Match</h2><p class="muted">The animals boarded two by two. Flip the cards and find every pair.</p></div>
+      <div class="scoreboard" style="margin:0">
+        <div class="stat"><div class="label">Pairs</div><div class="value"><span id="mm-pairs">0</span>/8</div></div>
+        <div class="stat"><div class="label">Moves</div><div class="value" id="mm-moves">0</div></div>
+        <div class="stat"><div class="label">Best</div><div class="value" id="mm-best">--</div></div>
+      </div>
+    </div>
+    <div class="memory-grid" id="mm-grid" aria-label="Memory cards"></div>
+    <div class="btn-row" style="margin-top:14px"><button class="btn secondary sm" type="button" id="mm-new">Shuffle and restart</button></div>
+  </section>
+
+  <section class="tab-panel card" id="tab-color" role="tabpanel" aria-labelledby="tabbtn-color" hidden>
+    <h2>Coloring Book</h2>
+    <p class="muted">Pick a color, then tap a part of the picture. Fill at least five areas and press Finished.</p>
+    <div class="tabs" id="cb-pages" aria-label="Pictures"></div>
+    <div class="palette" id="cb-palette" aria-label="Colors"></div>
+    <div class="coloring-stage" id="cb-stage"></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn" type="button" id="cb-finish">Finished</button>
+      <button class="btn ghost" type="button" id="cb-reset">Start over</button>
+      <button class="btn secondary" type="button" id="cb-download">Save picture</button>
+      <span class="small muted" id="cb-msg"></span>
+    </div>
+  </section>
+</main>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/kids.js"></script>
+</body>
+</html>

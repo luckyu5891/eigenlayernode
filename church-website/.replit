@@ -1,0 +1,12 @@
+# Replit configuration. Works for both "Run" (dev preview) and Static Deployments.
+run = "node serve.js"
+entrypoint = "index.html"
+modules = ["nodejs-22"]
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "."
+
+[[ports]]
+localPort = 3000
+externalPort = 80

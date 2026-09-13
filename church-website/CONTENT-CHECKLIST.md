@@ -21,15 +21,18 @@ Missing files are hidden automatically. JPG or PNG both work. Keep each under 50
 
 ## 2. Church details (config.js)
 
-- [ ] Tagline (one sentence under the church name)
-- [ ] Phone number
-- [ ] Parish email address
-- [ ] Website, Facebook, YouTube links (leave empty to hide)
-- [ ] Holy Qurbana and CCD schedule, with language for each service
-- [ ] Where the community currently gathers (address or a sentence)
-- [ ] Donation or capital campaign link. Leave empty to hide the button
-- [ ] Project story paragraph (3 to 5 sentences)
-- [ ] Milestones: land purchase year, design year, groundbreaking date, expected completion
+Filled from stalphonsaaustin.com in September 2026. Please confirm the items marked VERIFY.
+
+- [x] Church name, diocese (St. Thomas Syro-Malabar Catholic Diocese of Chicago)
+- [x] New campus address: 3600 Co Rd 175, Leander, TX 78641
+- [x] Phone 512-740-2262 and email trustees@stalphonsaaustin.com (VERIFY)
+- [x] Website, Facebook page, YouTube channel
+- [x] Vicar: Fr. Anto G. Alappat (VERIFY spelling)
+- [x] Holy Qurbana schedule, school-year version: Sunday 9:30 AM Malayalam, 9:30 AM CCD, 11:00 AM English, 12:30 PM Malayalam class; Tue and Fri 7:00 PM; Wed, Thu, Sat 9:00 AM. The site also shows a summer schedule (Sunday 9:00 AM Malayalam, 11:45 AM English). Tell us if the site should switch automatically by season.
+- [ ] Where the parish gathers during construction. The Manor church on Burleson Manor Rd has been sold, so the card currently points people to the parish website. Give us the current address or venue.
+- [ ] Direct giving link. The Support button currently opens the New Church Project page. Replace with a Zelle, PayPal, or pledge form link if you have one.
+- [x] Project story, in the parish's own words from the project page
+- [ ] Dates for the timeline entries: General Body approval, land purchase, property blessing and Phase 1 groundbreaking, rectory blessing, Manor sale. Also what Phase 1 covers (church or CCD building first) and the target completion.
 
 ## 3. Facts to verify or fill (data.js, marked PLACEHOLDER)
 

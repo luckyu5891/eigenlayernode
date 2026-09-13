@@ -102,8 +102,8 @@
     const ul = $('#milestones'); C.milestones.forEach(m => ul.append(el('li', { html: `<div class="w">${esc(m.when)}</div><div>${esc(m.what)}</div>` })));
     const row = $('#donate-row');
     if (C.donateUrl) row.append(el('a', { class: 'btn gold', href: C.donateUrl, target: '_blank', rel: 'noopener', text: C.donateLabel }));
+    else row.append(el('span', { class: 'placeholder-note', text: 'Add donateUrl in config.js to show the Support button.' }));
     if (C.projectUrl && C.projectUrl !== C.donateUrl) row.append(el('a', { class: 'btn secondary', href: C.projectUrl, target: '_blank', rel: 'noopener', text: 'Project page' }));
-    else row.append(el('span', { class: 'placeholder-note', text: 'Add donateUrl in config.js to show the Support the Build button.' }));
     if (C.images.sitePlan) { const img = el('img', { src: C.images.sitePlan, alt: 'Site plan', style: 'width:100%;border-radius:12px;margin-top:14px', onerror: e => e.target.remove() }); row.parentNode.append(img); }
   }
   function renderFooter() {

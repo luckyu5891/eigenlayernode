@@ -1,0 +1,650 @@
+<title>Before You Arrived</title>
+<meta name="description" content="A mentalist who performs on you before you ever pick up the phone. Corporate, private and stage performances.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400;1,6..96,500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Special+Elite&display=swap">
+<style>
+  :root{
+    --ground:#120C14;
+    --ground-2:#1A1220;
+    --ground-3:#221829;
+    --line:rgba(234,227,214,.12);
+    --line-strong:rgba(234,227,214,.28);
+    --text:#EAE3D6;
+    --muted:#9E93A3;
+    --brass:#C9A45C;
+    --brass-2:#E2C382;
+    --brass-dim:rgba(201,164,92,.18);
+    --paper:#EFE6D3;
+    --paper-2:#E3D8C1;
+    --paper-line:rgba(42,35,48,.14);
+    --ink:#2A2330;
+    --card-red:#A8323E;
+    --card-black:#1A1620;
+    --wax:#7A1F2B;
+    --display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+    --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+    --slip:"Special Elite","Courier New",Courier,monospace;
+    --step:cubic-bezier(.2,.7,.2,1);
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:dark}
+  body{
+    margin:0;
+    background:var(--ground) radial-gradient(ellipse 80% 42% at 50% -4%, rgba(201,164,92,.16), transparent 72%) no-repeat;
+    color:var(--text);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.55;
+    padding-inline:20px;
+    padding-block:0 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brass-2)}
+  :focus-visible{outline:2px solid var(--brass-2);outline-offset:3px;border-radius:2px}
+  ::selection{background:var(--brass);color:var(--ground)}
+
+  .wrap{max-width:1040px;margin-inline:auto}
+  .stage-col{max-width:720px;margin-inline:auto}
+
+  /* Top bar */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding-block:22px 10px;
+  }
+  .mark{
+    font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--text);text-decoration:none;
+  }
+  .mark small{display:block;font-weight:400;letter-spacing:.14em;color:var(--muted);margin-top:4px;font-size:10px}
+  .quiet{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted);
+    border-bottom:1px solid var(--line-strong);padding-bottom:3px;white-space:nowrap;
+  }
+  .quiet:hover{color:var(--brass-2);border-color:var(--brass)}
+
+  /* Stage */
+  .stage{padding-block:34px 60px;text-align:center}
+  .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 22px}
+
+  /* Envelope */
+  .env{
+    position:relative;width:min(300px,82vw);aspect-ratio:300/190;margin:0 auto 34px;
+    perspective:900px;
+  }
+  .env-back{position:absolute;inset:0;background:var(--paper-2);border-radius:4px;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)}
+  .env-slip{
+    position:absolute;left:8%;right:8%;top:10%;height:78%;
+    background:var(--paper);border-radius:3px;
+    background-image:repeating-linear-gradient(to bottom, transparent 0 22px, var(--paper-line) 22px 23px);
+    transition:transform 1.1s var(--step) .5s, opacity .4s ease 1.5s;
+    z-index:2;
+  }
+  .env-front{
+    position:absolute;inset:0;z-index:3;border-radius:4px;
+    background:linear-gradient(180deg, var(--paper-2), #D9CDB3);
+    clip-path:polygon(0 0, 50% 46%, 100% 0, 100% 100%, 0 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .env-flap{
+    position:absolute;left:0;right:0;top:0;height:50%;z-index:4;
+    background:linear-gradient(180deg,#E6DCC5,var(--paper-2));
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:top center;transform:rotateX(0deg);
+    transition:transform .9s var(--step);
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));
+  }
+  .wax{
+    position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-14%);
+    border-radius:50%;background:radial-gradient(circle at 40% 35%, #A33344, var(--wax) 60%, #4E1219);
+    box-shadow:0 2px 4px rgba(0,0,0,.4), inset 0 0 0 3px rgba(0,0,0,.08);
+    z-index:5;display:grid;place-items:center;color:rgba(255,220,200,.6);font-family:var(--display);font-style:italic;font-size:20px;
+    transition:opacity .4s ease;
+  }
+  .env-label{
+    position:absolute;left:0;right:0;bottom:-30px;font-family:var(--slip);font-size:12px;color:var(--muted);letter-spacing:.04em;
+  }
+  .env.open .env-flap{transform:rotateX(-176deg)}
+  .env.open .wax{opacity:0}
+  .env.open .env-slip{transform:translateY(-92%) rotate(-2deg);opacity:0}
+
+  h1.thesis{
+    font-family:var(--display);font-style:italic;font-weight:400;
+    font-size:clamp(34px,6.2vw,64px);line-height:1.04;letter-spacing:-.01em;
+    margin:0 auto 18px;max-width:14ch;text-wrap:balance;
+  }
+  .lede{color:var(--muted);max-width:44ch;margin:0 auto 30px;font-size:17px}
+
+  .btn{
+    font:600 12px/1 var(--body);letter-spacing:.2em;text-transform:uppercase;
+    color:var(--brass-2);background:transparent;border:1px solid var(--brass);
+    padding:16px 26px;border-radius:999px;cursor:pointer;
+    transition:background .25s ease,color .25s ease,transform .25s var(--step);
+  }
+  .btn:hover{background:var(--brass);color:var(--ground)}
+  .btn:active{transform:translateY(1px)}
+  .btn.solid{background:var(--brass);color:var(--ground)}
+  .btn.solid:hover{background:var(--brass-2)}
+  .btn.ghost{border-color:var(--line-strong);color:var(--text)}
+  .btn.ghost:hover{border-color:var(--brass);color:var(--brass-2);background:transparent}
+
+  /* Steps */
+  .step{
+    min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+    opacity:1;transform:none;transition:opacity .45s ease,transform .45s var(--step);
+  }
+  .step.out{opacity:0;transform:translateY(10px)}
+  .step .line{
+    font-family:var(--display);font-style:italic;font-weight:400;
+    font-size:clamp(28px,4.6vw,44px);line-height:1.1;margin:0;max-width:20ch;text-wrap:balance;
+  }
+  .step .sub{color:var(--muted);margin:-6px 0 0;max-width:42ch}
+  .progress{height:1px;background:var(--line);margin:0 auto 26px;max-width:320px;position:relative;overflow:hidden}
+  .progress i{position:absolute;left:0;top:0;bottom:0;background:var(--brass);width:0;transition:width .6s var(--step)}
+
+  /* Marks grid */
+  .marks{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:min(520px,100%);margin-top:6px}
+  .tile{
+    border:1px solid var(--line);border-radius:6px;padding:14px 6px 12px;background:var(--ground-2);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .tile b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tile span{font-size:26px;line-height:1;color:var(--text)}
+
+  /* Cards */
+  .fan{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;perspective:1000px;width:100%}
+  .card{
+    width:88px;aspect-ratio:5/7;border-radius:8px;background:var(--paper);color:var(--card-black);
+    position:relative;box-shadow:0 14px 30px -14px rgba(0,0,0,.9), inset 0 0 0 1px rgba(0,0,0,.08);
+    font-family:var(--display);
+    animation:deal .6s var(--step) both;
+  }
+  .card.red{color:var(--card-red)}
+  .card .c{position:absolute;font-size:15px;line-height:1;font-weight:600;left:8px;top:8px;text-align:center}
+  .card .c small{display:block;font-size:13px;margin-top:1px}
+  .card .c.b{left:auto;right:8px;top:auto;bottom:8px;transform:rotate(180deg)}
+  .card .r{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;font-style:italic;font-weight:500}
+  .card .r::after{content:attr(data-suit);position:absolute;font-size:16px;font-style:normal;bottom:26%;left:50%;transform:translateX(-50%);opacity:.75}
+  .card:nth-child(1){animation-delay:.02s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.14s}
+  .card:nth-child(4){animation-delay:.20s}.card:nth-child(5){animation-delay:.26s}.card:nth-child(6){animation-delay:.32s}
+  @keyframes deal{from{opacity:0;transform:translateY(18px) rotateY(60deg)}to{opacity:1;transform:none}}
+
+  /* Reading */
+  .eye{width:120px;height:120px;position:relative;display:grid;place-items:center}
+  .eye i{position:absolute;inset:0;border-radius:50%;border:1px solid var(--brass);opacity:0;animation:ring 2.2s ease-out infinite}
+  .eye i:nth-child(2){animation-delay:.7s}.eye i:nth-child(3){animation-delay:1.4s}
+  .eye b{width:10px;height:10px;border-radius:50%;background:var(--brass-2);box-shadow:0 0 24px var(--brass)}
+  @keyframes ring{0%{transform:scale(.2);opacity:.9}100%{transform:scale(1);opacity:0}}
+
+  /* Reveal slip */
+  .slip{
+    width:min(520px,100%);background:var(--paper);color:var(--ink);text-align:left;
+    padding:30px 32px 28px;border-radius:3px;position:relative;
+    background-image:repeating-linear-gradient(to bottom, transparent 0 29px, var(--paper-line) 29px 30px);
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.95), 0 0 0 1px rgba(0,0,0,.12);
+    font-family:var(--slip);font-size:16px;line-height:30px;
+    transform:rotate(-1.2deg);
+  }
+  .slip::before{
+    content:"";position:absolute;left:50%;top:-9px;width:70px;height:20px;transform:translateX(-50%) rotate(1deg);
+    background:rgba(201,164,92,.35);border:1px solid rgba(0,0,0,.08);
+  }
+  .slip p{margin:0;min-height:30px;white-space:pre-wrap}
+  .slip .caret{display:inline-block;width:9px;height:18px;background:var(--ink);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .after{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin-top:8px}
+  .after form{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .field{
+    font:400 15px var(--body);color:var(--text);background:var(--ground-2);border:1px solid var(--line-strong);
+    border-radius:999px;padding:14px 18px;min-width:220px;
+  }
+  .field::placeholder{color:var(--muted)}
+  .field:focus{border-color:var(--brass)}
+  .restart{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:none;border:0;cursor:pointer;margin-top:6px}
+  .restart:hover{color:var(--brass-2)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* Sections */
+  section.block{padding-block:72px;border-top:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin:0 0 18px}
+  h2{
+    font-family:var(--display);font-weight:400;font-size:clamp(32px,4.4vw,52px);line-height:1.05;letter-spacing:-.01em;
+    margin:0 0 22px;text-wrap:balance;max-width:20ch;
+  }
+  h2 em{font-style:italic}
+  .prose{max-width:62ch;color:var(--text);font-size:18px}
+  .prose p{margin:0 0 18px}
+  .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+  @media (max-width:760px){.two{grid-template-columns:1fr;gap:28px}}
+
+  .reel{
+    position:relative;aspect-ratio:16/9;max-width:100%;border-radius:6px;overflow:hidden;
+    background:
+      radial-gradient(ellipse 60% 70% at 50% 100%, rgba(201,164,92,.25), transparent 70%),
+      linear-gradient(180deg, var(--ground-3), var(--ground-2));
+    border:1px solid var(--line);display:grid;place-items:center;
+  }
+  .reel .play{
+    width:74px;height:74px;border-radius:50%;border:1px solid var(--brass);display:grid;place-items:center;color:var(--brass-2);
+    background:rgba(18,12,20,.5);cursor:pointer;font-size:0;
+  }
+  .reel .play::after{content:"";border-left:18px solid currentColor;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+  .reel .cap{position:absolute;left:18px;bottom:14px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .reel .dur{position:absolute;right:18px;bottom:14px;font-size:12px;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
+  @media (max-width:600px){.reel .cap{top:14px;bottom:auto}}
+
+  .formats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+  @media (max-width:760px){.formats{grid-template-columns:1fr}}
+  .fmt{background:var(--ground);padding:30px 26px 32px;display:flex;flex-direction:column;gap:14px}
+  .fmt h3{font-family:var(--display);font-weight:400;font-style:italic;font-size:30px;margin:0;line-height:1.05}
+  .fmt .spec{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px;color:var(--muted);margin:0}
+  .fmt .spec dt{letter-spacing:.12em;text-transform:uppercase;font-size:11px;padding-top:3px}
+  .fmt .spec dd{margin:0;color:var(--text);font-variant-numeric:tabular-nums}
+  .fmt p{margin:0;color:var(--muted);font-size:15px}
+  .fmt q{font-family:var(--display);font-style:italic;font-size:19px;color:var(--brass-2);quotes:none}
+
+  .quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px}
+  @media (max-width:760px){.quotes{grid-template-columns:1fr}}
+  .quote p{font-family:var(--display);font-style:italic;font-size:24px;line-height:1.25;margin:0 0 14px;text-wrap:balance}
+  .quote cite{font-style:normal;font-size:13px;letter-spacing:.06em;color:var(--muted)}
+  .sample{display:inline-block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border:1px dashed var(--line-strong);padding:4px 8px;border-radius:3px;margin-left:10px;vertical-align:middle}
+
+  .scarcity{display:flex;flex-wrap:wrap;gap:40px;align-items:end;justify-content:space-between}
+  .big{font-family:var(--display);font-weight:400;font-size:clamp(64px,12vw,140px);line-height:.9;letter-spacing:-.02em;margin:0;font-variant-numeric:tabular-nums}
+  .big small{display:block;font-family:var(--body);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+  .months{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;min-width:min(420px,100%);flex:1}
+  .mo{border:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;gap:6px;border-radius:4px}
+  .mo b{font-family:var(--display);font-weight:400;font-size:22px}
+  .mo span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .mo.open span{color:var(--brass-2)}
+  .mo.full{opacity:.5}
+
+  /* Enquiry */
+  .enq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;max-width:720px}
+  @media (max-width:600px){.enq{grid-template-columns:1fr}}
+  .enq label{display:flex;flex-direction:column;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .enq input,.enq select{
+    font:400 16px var(--body);color:var(--text);background:var(--ground-2);border:1px solid var(--line-strong);border-radius:4px;padding:14px 14px;
+    width:100%;
+  }
+  .enq input::placeholder{color:rgba(158,147,163,.7)}
+  .enq input:focus,.enq select:focus{border-color:var(--brass)}
+  .enq .full{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;margin-top:8px}
+  .enq .note{font-size:14px;color:var(--muted);max-width:44ch;margin:0}
+  .done{
+    border:1px solid var(--brass);border-radius:4px;padding:26px 28px;max-width:720px;
+    font-family:var(--display);font-style:italic;font-size:26px;line-height:1.2;
+  }
+
+  footer{border-top:1px solid var(--line);padding-top:30px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;color:var(--muted);font-size:14px}
+  footer nav{display:flex;gap:22px}
+  footer a{color:var(--muted);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+  footer a:hover{color:var(--brass-2)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  }
+</style>
+
+<header class="wrap top">
+  <a class="mark" href="#top">The Mentalist<small>Corporate · Private · Stage</small></a>
+  <a class="quiet" href="#enquiry">Check availability</a>
+</header>
+
+<main class="wrap" id="top">
+  <section class="stage stage-col" aria-label="A forty second demonstration">
+    <p class="kicker">Before we talk</p>
+
+    <div class="env" id="env" aria-hidden="true">
+      <div class="env-back"></div>
+      <div class="env-slip"></div>
+      <div class="env-front"></div>
+      <div class="env-flap"><span class="wax">m</span></div>
+      <div class="env-label">sealed before you arrived</div>
+    </div>
+
+    <div class="progress" id="progress" hidden><i></i></div>
+    <div id="stage-step" class="step" aria-live="polite">
+      <h1 class="thesis">I already know what you’re about to think.</h1>
+      <p class="lede">Forty seconds. Nothing to type, nothing to tell me. Then open the envelope.</p>
+      <button class="btn solid" id="start">Prove it</button>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="two">
+      <div>
+        <p class="eyebrow">What this is</p>
+        <h2>Not a magician. <em>Nothing is in his hands.</em></h2>
+      </div>
+      <div class="prose">
+        <p>He works with what your guests are thinking: the name they didn’t say, the number they wrote down and folded away, the memory they have never told anyone.</p>
+        <p>In a boardroom of twelve or a ballroom of twelve hundred it lands the same way. Silence first. Then the room comes apart.</p>
+        <p>You just felt a small version of it on a screen. In the room, it is not small.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="reel">
+    <p class="eyebrow">Watch the room, not the trick</p>
+    <div class="two">
+      <h2>Ninety seconds of <em>faces</em>.</h2>
+      <p class="prose" style="margin-top:6px">Reactions only. No reveals, no explanations. If you want to know what your CEO looks like when someone reads a number out of her head, this is it.</p>
+    </div>
+    <div class="reel" role="img" aria-label="Video placeholder for the reactions reel">
+      <button class="play" type="button" aria-label="Play the reel">Play</button>
+      <span class="cap">Reactions reel · replace with embed</span>
+      <span class="dur">01:30</span>
+    </div>
+  </section>
+
+  <section class="block" id="formats">
+    <p class="eyebrow">Three ways he performs</p>
+    <h2>Pick the <em>room</em>, not the act.</h2>
+    <div class="formats">
+      <article class="fmt">
+        <h3>The Stage</h3>
+        <dl class="spec">
+          <dt>Length</dt><dd>45 to 60 minutes</dd>
+          <dt>Guests</dt><dd>200 to 2,000</dd>
+          <dt>For</dt><dd>Gala dinners, annual days, launches</dd>
+        </dl>
+        <p>The whole room is the volunteer. Predictions sealed before the doors open, read back from the seats.</p>
+        <q>Close enough to gasp, far enough to argue about it afterwards.</q>
+      </article>
+      <article class="fmt">
+        <h3>The Dinner</h3>
+        <dl class="spec">
+          <dt>Length</dt><dd>2 hours, table to table</dd>
+          <dt>Guests</dt><dd>Up to 40</dd>
+          <dt>For</dt><dd>Client dinners, founder retreats, private celebrations</dd>
+        </dl>
+        <p>No stage, no microphone. He sits down with eight people at a time and takes something out of each of their heads.</p>
+        <q>Close enough to see there is nothing to see.</q>
+      </article>
+      <article class="fmt">
+        <h3>The Boardroom</h3>
+        <dl class="spec">
+          <dt>Length</dt><dd>30 minutes plus questions</dd>
+          <dt>Guests</dt><dd>8 to 60</dd>
+          <dt>For</dt><dd>Leadership offsites, sales kick-offs</dd>
+        </dl>
+        <p>Reading a room, influence, and why people believe what they believe. Demonstrated on the people in it.</p>
+        <q>The one session the board still talks about in Q3.</q>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="proof">
+    <p class="eyebrow">Afterwards <span class="sample">Sample copy · replace before launch</span></p>
+    <div class="quotes">
+      <figure class="quote">
+        <p>I have booked speakers for fourteen years. This is the only one the board brought up at the next meeting.</p>
+        <cite>Chief People Officer, listed company</cite>
+      </figure>
+      <figure class="quote">
+        <p>He told our CFO the number she had written. She had not shown anyone. She still has not recovered.</p>
+        <cite>Founder, fintech</cite>
+      </figure>
+      <figure class="quote">
+        <p>Forty minutes. Not one phone came out. I did not know that was possible with this crowd.</p>
+        <cite>Head of Events, private bank</cite>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" id="dates">
+    <p class="eyebrow">Availability <span class="sample">Illustrative · update monthly</span></p>
+    <div class="scarcity">
+      <p class="big">24<small>nights a year, by design</small></p>
+      <div class="months" aria-label="Remaining dates this year">
+        <div class="mo full"><b>Sep</b><span>Held</span></div>
+        <div class="mo open"><b>Oct</b><span>1 open</span></div>
+        <div class="mo open"><b>Nov</b><span>2 open</span></div>
+        <div class="mo full"><b>Dec</b><span>Held</span></div>
+      </div>
+    </div>
+    <p class="prose" style="margin-top:28px;color:var(--muted)">Fewer rooms, so every room gets the full performance and not a version of it. If your date is open, you will know within one working day.</p>
+  </section>
+
+  <section class="block" id="enquiry">
+    <p class="eyebrow">Check availability</p>
+    <h2>Tell him about the <em>room</em>.</h2>
+    <form class="enq" id="enq" novalidate>
+      <label for="f-date">Event date<input id="f-date" name="date" type="date" required></label>
+      <label for="f-city">City<input id="f-city" name="city" type="text" placeholder="Bengaluru" autocomplete="address-level2" required></label>
+      <label for="f-guests">Guests
+        <select id="f-guests" name="guests" required>
+          <option value="">Choose</option>
+          <option>Up to 40</option>
+          <option>40 to 200</option>
+          <option>200 to 800</option>
+          <option>800 and above</option>
+        </select>
+      </label>
+      <label for="f-format">Format
+        <select id="f-format" name="format" required>
+          <option value="">Choose</option>
+          <option>The Stage</option>
+          <option>The Dinner</option>
+          <option>The Boardroom</option>
+          <option>Not sure yet</option>
+        </select>
+      </label>
+      <label for="f-budget">Budget band
+        <select id="f-budget" name="budget" required>
+          <option value="">Choose</option>
+          <option>Under ₹3 lakh</option>
+          <option>₹3 to 6 lakh</option>
+          <option>₹6 to 12 lakh</option>
+          <option>Above ₹12 lakh</option>
+        </select>
+      </label>
+      <label for="f-email">Work email<input id="f-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required></label>
+      <div class="full">
+        <p class="note">He reads every enquiry himself and replies with a yes or a no. Never a maybe, never an agency.</p>
+        <button class="btn solid" type="submit">Check availability</button>
+      </div>
+    </form>
+    <div class="done" id="done" hidden>Received. Expect a yes or a no within one working day.</div>
+  </section>
+
+  <footer>
+    <span>Enquiries reach him directly. No agency, no middle layer.</span>
+    <nav aria-label="Social">
+      <a href="#" rel="me">Instagram</a>
+      <a href="#" rel="me">Facebook</a>
+      <a href="#" rel="me">WhatsApp</a>
+    </nav>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = document.getElementById('stage-step');
+  const env = document.getElementById('env');
+  const progress = document.getElementById('progress');
+  const bar = progress.querySelector('i');
+
+  // Deterministic material. The arithmetic below always resolves to 4.
+  const MARKS = ['○','△','□','✦','◇','☾','✚','★','∞','♪'];
+  const FORCED = MARKS[3];
+  const SET1 = [['K','♠'],['Q','♥'],['J','♦'],['K','♥'],['Q','♣'],['J','♠']];
+  const SET2 = [['K','♦'],['Q','♠'],['J','♥'],['K','♣'],['Q','♦']];
+
+  const STEPS = [
+    { line:'Think of a number from one to ten.', sub:'Hold it. Don’t say it, don’t type it.', btn:'I have one' },
+    { line:'Double it.', btn:'Done' },
+    { line:'Add eight.', btn:'Done' },
+    { line:'Cut it in half.', btn:'Done' },
+    { line:'Take away the number you first thought of.', btn:'Done' },
+    { line:'You’re holding a new number. Find it. Notice the mark beside it.', sub:'Remember the mark. Not the number, the mark.', kind:'marks', btn:'I have the mark' },
+    { line:'Good. Now something harder.', sub:'Six cards. Think of one. Just one. Don’t touch the screen.', kind:'cards', cards:SET1, btn:'I’ve chosen' },
+    { line:'Hold its face in your mind.', kind:'reading', auto: reduced ? 900 : 2800 },
+    { line:'I’ve taken your card away.', sub:'Look. It’s gone.', kind:'cards', cards:SET2, btn:'How?' },
+    { kind:'reveal' }
+  ];
+
+  let idx = -1;
+
+  function el(tag, cls, html){
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html !== undefined) n.innerHTML = html;
+    return n;
+  }
+
+  function card([rank, suit]){
+    const red = suit === '♥' || suit === '♦';
+    const c = el('div', 'card' + (red ? ' red' : ''));
+    c.setAttribute('role','img');
+    c.setAttribute('aria-label', rank + ' of ' + ({'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs'})[suit]);
+    c.innerHTML = '<span class="c">' + rank + '<small>' + suit + '</small></span>' +
+                  '<span class="r" data-suit="' + suit + '">' + rank + '</span>' +
+                  '<span class="c b">' + rank + '<small>' + suit + '</small></span>';
+    return c;
+  }
+
+  function button(label, onClick, cls){
+    const b = el('button', 'btn ' + (cls || ''), label);
+    b.type = 'button';
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function swap(build){
+    stage.classList.add('out');
+    const wait = reduced ? 0 : 420;
+    setTimeout(function(){
+      stage.innerHTML = '';
+      build(stage);
+      stage.classList.remove('out');
+      const focusable = stage.querySelector('button, input');
+      if (focusable && idx > 0) focusable.focus({ preventScroll: true });
+    }, wait);
+  }
+
+  function next(){
+    idx += 1;
+    const s = STEPS[idx];
+    progress.hidden = false;
+    bar.style.width = Math.round((idx / (STEPS.length - 1)) * 100) + '%';
+    if (s.kind === 'reveal') return reveal();
+    swap(function(root){
+      root.appendChild(el('p', 'line', s.line));
+      if (s.sub) root.appendChild(el('p', 'sub', s.sub));
+      if (s.kind === 'marks'){
+        const g = el('div', 'marks');
+        MARKS.forEach(function(m, i){
+          g.appendChild(el('div', 'tile', '<b>' + (i + 1) + '</b><span>' + m + '</span>'));
+        });
+        root.appendChild(g);
+      }
+      if (s.kind === 'cards'){
+        const fan = el('div', 'fan');
+        s.cards.forEach(function(cd){ fan.appendChild(card(cd)); });
+        root.appendChild(fan);
+      }
+      if (s.kind === 'reading'){
+        root.appendChild(el('div', 'eye', '<i></i><i></i><i></i><b></b>'));
+        setTimeout(next, s.auto);
+        return;
+      }
+      root.appendChild(button(s.btn, next, idx === 0 ? 'solid' : ''));
+    });
+  }
+
+  function reveal(){
+    env.classList.add('open');
+    bar.style.width = '100%';
+    const lines = [
+      'Before you arrived, I wrote this down.',
+      '',
+      'The mark beside your number is ' + FORCED + '.',
+      'Your card is gone.',
+      '',
+      'And right now you want to know how this works in a room of four hundred.',
+      '',
+      'Let’s talk.'
+    ];
+    swap(function(root){
+      const slip = el('div', 'slip');
+      slip.setAttribute('aria-label', 'The prediction');
+      const ps = lines.map(function(){ return el('p'); });
+      ps.forEach(function(p){ slip.appendChild(p); });
+      root.appendChild(slip);
+
+      const after = el('div', 'after');
+      after.hidden = true;
+      const cta = el('a', 'btn solid', 'Check availability');
+      cta.href = '#enquiry';
+      after.appendChild(cta);
+      const form = el('form');
+      form.innerHTML = '<label class="sr" for="env-email">Your email</label>' +
+        '<input class="field" id="env-email" type="email" placeholder="Send me the envelope" autocomplete="email" required>';
+      form.appendChild(button('Send', null, 'ghost'));
+      form.querySelector('button').type = 'submit';
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const inp = form.querySelector('input');
+        if (!inp.checkValidity()) { inp.reportValidity(); return; }
+        form.innerHTML = '<p class="sub" style="margin:0">On its way. Check your inbox in a minute.</p>';
+      });
+      after.appendChild(form);
+      root.appendChild(after);
+
+      const again = el('button', 'restart', 'Run it again');
+      again.type = 'button';
+      again.addEventListener('click', restart);
+      again.hidden = true;
+      root.appendChild(again);
+
+      // Typewriter: the slip is the one orchestrated moment on the page.
+      const flat = [];
+      lines.forEach(function(t, li){ for (let k = 0; k < t.length; k++) flat.push([li, t[k]]); if (li < lines.length - 1) flat.push([li, null]); });
+      const startDelay = reduced ? 0 : 1300;
+      if (reduced){
+        lines.forEach(function(t, li){ ps[li].textContent = t; });
+        after.hidden = false; again.hidden = false;
+        return;
+      }
+      const caret = el('span', 'caret');
+      let pos = 0, cur = 0;
+      ps[0].appendChild(caret);
+      setTimeout(function tick(){
+        if (pos >= flat.length){ caret.remove(); after.hidden = false; again.hidden = false; return; }
+        const [li, ch] = flat[pos++];
+        if (ch === null){ cur = li + 1; ps[cur].appendChild(caret); return setTimeout(tick, lines[cur] === '' ? 120 : 260); }
+        ps[li].insertBefore(document.createTextNode(ch), caret);
+        setTimeout(tick, ch === ' ' ? 40 : 34);
+      }, startDelay);
+    });
+  }
+
+  function restart(){
+    idx = -1;
+    env.classList.remove('open');
+    progress.hidden = true;
+    bar.style.width = '0%';
+    swap(function(root){
+      root.innerHTML = '<h1 class="thesis">I already know what you’re about to think.</h1>' +
+        '<p class="lede">Forty seconds. Nothing to type, nothing to tell me. Then open the envelope.</p>';
+      root.appendChild(button('Prove it', next, 'solid'));
+      root.querySelector('button').id = 'start';
+    });
+  }
+
+  document.getElementById('start').addEventListener('click', next);
+
+  // Enquiry form: front end only. Wire the action to your CRM or a form endpoint.
+  const enq = document.getElementById('enq');
+  enq.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!enq.checkValidity()){ enq.reportValidity(); return; }
+    enq.hidden = true;
+    document.getElementById('done').hidden = false;
+    if (window.dataLayer) window.dataLayer.push({ event: 'enquiry_submitted' });
+  });
+})();
+</script>

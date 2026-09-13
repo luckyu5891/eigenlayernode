@@ -131,6 +131,7 @@
           <span class="brand-text"><span class="brand-name"><span class="full">${esc(C.name)}</span><span class="short">${esc(C.shortName)}</span></span><span class="brand-tag">${esc(C.address)}</span></span>
         </a>
         <nav class="nav" aria-label="Main">
+          <a href="#places">Explore</a>
           <a href="#visit">Visit</a>
           ${C.donateUrl ? `<a href="${esc(C.donateUrl)}" target="_blank" rel="noopener" class="donate">${esc(C.donateLabel)}</a>` : ''}
           <button type="button" id="passport-btn">Passport <span class="pill-count" id="passport-count">0/5</span></button>

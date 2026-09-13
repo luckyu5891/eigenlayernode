@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{church} · Campus</title>
 <meta name="description" content="Explore the new St. Alphonsa Syro-Malabar Catholic Church campus in Leander, Texas. Tap each building on the map to learn about it and play a game.">
-<meta name="theme-color" content="#14213d">
+<meta name="theme-color" content="#0c1631">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,500&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
@@ -14,49 +14,48 @@
 <body id="top">
 
 <main>
-  <section class="hero wrap">
-    <span class="eyebrow">Our new campus · Leander, Texas</span>
-    <h1 data-church="name">St. Alphonsa Syro-Malabar Catholic Church</h1>
-    <p data-church="tagline">Our new home is taking shape. Come explore the campus.</p>
-  </section>
+  <div class="stage" id="stage">
+    <svg class="iso-map" id="iso-map" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="map-title map-desc">
+      <title id="map-title">Interactive map of the new campus</title>
+      <desc id="map-desc">A church, a CCD building, two basketball courts, a loop of parking, and two detention ponds beside County Road 175. Each is a button.</desc>
+    </svg>
 
-  <div class="stage-wrap">
-    <div class="stage" id="stage">
-      <svg class="iso-map" id="iso-map" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="map-title map-desc">
-        <title id="map-title">Isometric map of the new campus</title>
-        <desc id="map-desc">A church, a CCD building, two basketball courts, a loop of parking, and two detention ponds beside County Road 175. Each is a button.</desc>
-      </svg>
+    <div class="stage-intro" id="stage-intro">
+      <span class="eyebrow">Our new campus · Leander, Texas</span>
+      <h1 data-church="tagline">Our new home is taking shape. Come explore the campus.</h1>
+    </div>
 
-      <div class="stage-ui">
-        <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
-        <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
-        <button type="button" id="zoom-reset" aria-label="Reset view" title="Reset view">⌂</button>
-        <span class="compass" title="North" aria-label="North is up">
-          <svg width="22" height="22" viewBox="0 0 24 24"><polygon points="12,2 16,14 12,11 8,14" fill="#c2553d"/><polygon points="12,22 16,10 12,13 8,10" fill="#6c7280"/></svg>
-        </span>
-      </div>
-      <div class="stage-hint" id="stage-hint">Tap a building · drag to pan · pinch to zoom</div>
+    <div class="stage-ui">
+      <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" id="zoom-reset" aria-label="Reset view" title="Reset view">⌂</button>
+      <span class="compass" title="North" aria-label="North is up and to the left">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="transform:rotate(-32deg)"><polygon points="12,2 16,14 12,11 8,14" fill="#ff8f6b"/><polygon points="12,22 16,10 12,13 8,10" fill="#8a93ad"/></svg>
+      </span>
+    </div>
 
-      <div class="hunt-banner" id="hunt-banner" aria-live="polite">
-        <div class="card">
-          <div class="clue">
-            <strong>Treasure Hunt · Clue <span id="hunt-step">1</span> of <span id="hunt-total">5</span></strong>
-            <em id="hunt-clue"></em>
-          </div>
-          <div class="hunt-found" id="hunt-found" aria-label="Relics found"></div>
-          <div class="btn-row">
-            <button class="btn sm gold" type="button" id="hunt-hint">Hint</button>
-            <button class="btn sm ghost" type="button" id="hunt-quit">Pause</button>
-          </div>
+    <div class="cta" id="stage-hint" aria-hidden="true"><span class="finger">👆</span><span>Tap any building to explore</span></div>
+    <a class="scroll-cue" id="scroll-cue" href="#places">Mass times, visit and more <span>⌄</span></a>
+
+    <div class="hunt-banner" id="hunt-banner" aria-live="polite">
+      <div class="card">
+        <div class="clue">
+          <strong>Treasure Hunt · Clue <span id="hunt-step">1</span> of <span id="hunt-total">5</span></strong>
+          <em id="hunt-clue"></em>
+        </div>
+        <div class="hunt-found" id="hunt-found" aria-label="Relics found"></div>
+        <div class="btn-row">
+          <button class="btn sm gold" type="button" id="hunt-hint">Hint</button>
+          <button class="btn sm ghost" type="button" id="hunt-quit">Pause</button>
         </div>
       </div>
-
-      <aside class="panel" id="panel" hidden aria-label="Details">
-        <div class="grab" aria-hidden="true"></div>
-        <button class="close" type="button" id="panel-close" aria-label="Close">✕</button>
-        <div class="panel-scroll" id="panel-body"></div>
-      </aside>
     </div>
+
+    <aside class="panel" id="panel" hidden aria-label="Details">
+      <div class="grab" aria-hidden="true"></div>
+      <button class="close" type="button" id="panel-close" aria-label="Close">✕</button>
+      <div class="panel-scroll" id="panel-body"></div>
+    </aside>
   </div>
 
   <section class="block wrap" id="places">
@@ -67,13 +66,13 @@
 
   <section class="block wrap" id="visit">
     <div class="grid cols-2">
-      <div class="card navy">
+      <div class="card">
         <h2>Join us for Holy Qurbana</h2>
-        <p class="small" style="opacity:.85" data-church="currentLocation"></p>
+        <p class="small muted" data-church="currentLocation"></p>
         <ul class="times" id="mass-times"></ul>
-        <p style="margin:0"><strong data-church="address"></strong><br><a id="phone-link" href="#" style="color:var(--gold-light)"><span data-church="phone"></span></a><br><a id="email-link" href="#" style="color:var(--gold-light)"><span data-church="email"></span></a></p>
+        <p style="margin:0"><strong data-church="address"></strong><br><a id="phone-link" href="#"><span data-church="phone"></span></a><br><a id="email-link" href="#"><span data-church="email"></span></a></p>
         <div class="btn-row" style="margin-top:16px">
-          <a class="btn gold" id="directions" href="#" target="_blank" rel="noopener">Directions to the new campus</a>
+          <a class="btn" id="directions" href="#" target="_blank" rel="noopener">Directions to the new campus</a>
         </div>
       </div>
       <div class="card">

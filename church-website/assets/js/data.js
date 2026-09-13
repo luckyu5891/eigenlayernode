@@ -33,7 +33,7 @@ window.DATA = {
       ],
       description: 'A multi-purpose building for catechism (CCD) classes on Sunday mornings, youth programs, parish meals, and community celebrations. Its covered stone entry mirrors the church next door.',   // PLACEHOLDER
       facts: [
-        'Same footprint as the church, so the two buildings read as a matched pair from the road.',
+        'Same footprint as the church but turned ninety degrees, so the two buildings frame the courts and the loop between them.',
         'Classrooms convert to one large hall for feasts, weddings, and Onam and Christmas celebrations.',   // PLACEHOLDER
         'A gravel fire lane loops behind the building, rated for a 75,000 lb fire truck.',
         'Accessible parking sits right at the entrance for the youngest and oldest parishioners.'
@@ -61,9 +61,9 @@ window.DATA = {
       meta: [
         ['Spaces', 'About 120'],                                                // PLACEHOLDER verify exact count
         ['Accessible', '8'],                                                    // PLACEHOLDER
-        ['Entrance', 'Gated drive from CR 175'], ['Layout', 'One-way loop']
+        ['Entrance', 'Straight drive from CR 175'], ['Layout', 'One-way loop']
       ],
-      description: 'A one-way loop wraps around the church with parking bays on both sides, so drop-off at the doors is easy and nobody has to reverse out into traffic.',   // PLACEHOLDER
+      description: 'The entrance drive runs straight in from County Road 175, between the two ponds, to the church doors. A one-way loop then wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
       facts: [
         'The entrance has a 6 ft sliding wrought-iron gate with a Knox key switch so fire crews can enter any time.',
         'The whole loop is sized for fire trucks to circle the church without stopping.',
@@ -75,14 +75,14 @@ window.DATA = {
       game: 'fishing', gameName: 'Gone Fishing', gameBlurb: 'Cast, wait for the bite, reel it in. Every catch unlocks a pond fact.',
       imageKey: 'pond',
       meta: [
-        ['Ponds', '2'], ['Spillway', '20 ft wide at 882.25 ft'],
-        ['Purpose', 'Flood control and filtration'], ['Location', 'Along CR 175']
+        ['Ponds', '2, matching'], ['Spillway', '20 ft wide at 882.25 ft'],
+        ['Purpose', 'Flood control and filtration'], ['Location', 'Either side of the entrance']
       ],
-      description: 'Two engineered basins along the road frontage. The detention pond slows rainwater rushing off roofs and parking, and the filtration basin cleans it before it leaves the property.',   // PLACEHOLDER
+      description: 'Two matching basins flank the entrance drive along the road frontage. They slow rainwater rushing off roofs and parking and clean it before it leaves the property.',   // PLACEHOLDER
       facts: [
         'Texas storms can drop inches of rain in an hour. The pond holds that surge and releases it slowly.',
         'A splitter box sends the first, dirtiest flush of runoff to the sedimentation basin for cleaning.',
-        'When dry, the pond is a grassy meadow. Fishing is strictly a game here.',
+        'When dry, the ponds are grassy meadows framing the entrance. Fishing is strictly a game here.',
         'A 20 ft emergency spillway protects the road if the pond ever overtops.'
       ]
     }
@@ -96,7 +96,7 @@ window.DATA = {
       fact: 'St. Alphonsa was born Anna Muttathupadathu in Kudamaloor, Kerala, in 1910.' },
     { target: 'pond', item: 'Blue Marble', emoji: '🔵', word: 'and',
       clue: 'I fill when the sky opens and empty when it clears. I keep the road dry and the creek clean.',
-      hint: 'Look along the road, where the ground dips.',
+      hint: 'Look beside the entrance drive, where the ground dips on both sides.',
       fact: 'She took the name Alphonsa in honour of St. Alphonsus Liguori when she entered the Franciscan Clarist Congregation.' },
     { target: 'courts', item: 'Bronze Whistle', emoji: '📣', word: 'you',
       clue: 'Twice sixty by thirty. Where sneakers squeak and the youth group settles arguments.',
@@ -107,7 +107,7 @@ window.DATA = {
       hint: 'The second big building, south-west of the church.',
       fact: 'Pope John Paul II beatified her in Kottayam in 1986. Pope Benedict XVI canonised her on 12 October 2008.' },
     { target: 'parking', item: 'Welcome Scroll', emoji: '📜', word: 'find',
-      clue: 'Everyone passes through me, though nobody stays. I circle the church and open at the iron gate.',
+      clue: 'Everyone passes through me, though nobody stays. I run in from the road between two ponds and circle the church.',
       hint: 'Follow the loop drive around the church.',
       fact: 'Her tomb at Bharananganam draws pilgrims from across India and the world every July 28th, her feast day.' }
   ],

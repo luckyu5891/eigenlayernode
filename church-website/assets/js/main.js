@@ -22,7 +22,7 @@
     $('#zoom-in').addEventListener('click', () => IsoMap.zoom(1.3));
     $('#zoom-out').addEventListener('click', () => IsoMap.zoom(1 / 1.3));
     $('#zoom-reset').addEventListener('click', () => { closeItem(); IsoMap.resetView(); });
-    setTimeout(() => $('#stage-hint').classList.add('fade'), 5000);
+    initDiscoverability();
 
     $('#hunt-hint').addEventListener('click', () => { const c = Hunt.current(); if (c) Toast.show('Hint: ' + c.hint, 'gold', 4000); });
     $('#hunt-quit').addEventListener('click', () => { Hunt.stop(); renderHunt(); Toast.show('Hunt paused. Resume from the church card.'); });
@@ -31,9 +31,25 @@
     const hash = location.hash.replace('#', ''); if (item(hash)) setTimeout(() => openItem(hash), 600);
   });
 
-  function openItem(id) { Sfx.play('tap'); Panel.open(id); IsoMap.select(id, Panel.region()); scrollToStage(); }
+  function openItem(id) { interacted(); Sfx.play('tap'); Panel.open(id); IsoMap.select(id, Panel.region()); scrollToStage(); }
+
+  /* ---------- Discoverability: tap cue, periodic nudge, floating header ---------- */
+  let touched = false, nudgeTimer = null;
+  function interacted() {
+    if (touched) return; touched = true;
+    $('#stage-hint').classList.add('hide'); $('#stage-intro').classList.add('hide');
+    clearInterval(nudgeTimer);
+  }
+  function initDiscoverability() {
+    IsoMap.onInteract = interacted;
+    // pulse the church label every few seconds until the visitor taps something
+    let n = 0; nudgeTimer = setInterval(() => { if (touched || n++ > 6) return clearInterval(nudgeTimer); IsoMap.nudge(D.items[n % D.items.length].id); }, 4200);
+    const header = $('.site-header');
+    const onScroll = () => { header.classList.toggle('scrolled', window.scrollY > 40); $('#scroll-cue').style.opacity = window.scrollY > 40 ? '0' : ''; if (window.scrollY > 120) $('#stage-intro').classList.add('hide'); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  }
   function closeItem() { Panel.close(); IsoMap.deselect(); }
-  function scrollToStage() { const top = $('#stage').getBoundingClientRect().top + window.scrollY - 70; if (Math.abs(window.scrollY - top) > 40) window.scrollTo({ top, behavior: 'smooth' }); }
+  function scrollToStage() { if (window.scrollY > 40) window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
   /* ---------- Treasure hunt on the map ---------- */
   function huntTap(id) {

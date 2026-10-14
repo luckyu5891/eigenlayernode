@@ -59,13 +59,13 @@ window.DATA = {
       meta: [
         ['Spaces', 'About 120'],                                                // PLACEHOLDER verify exact count
         ['Accessible', '8'],                                                    // PLACEHOLDER
-        ['Car entrance', 'Right side, off CR 175'], ['Layout', 'One-way loop']
+        ['Car entrance', 'Right-hand end of the frontage, off CR 175'], ['Layout', 'One-way loop']
       ],
-      description: 'Cars enter from County Road 175 at the right side of the property, cross the pond on a culvert, and join a one-way loop that wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
+      description: 'Cars enter from County Road 175 at the right-hand end of the frontage as you look in from the road, cross the pond on a culvert, pass a row of extra parking, and join a one-way loop that wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
       facts: [
         'Walkers get a grand entrance right in the centre: wide steps up from the road, a landing, a 20 ft wooden arch bridge over the pond, and a lamp-lit promenade straight to the church doors.',
         'The whole loop is one way, so nobody has to reverse into traffic.',
-        'An additional parking area is planned for feast days and future growth.'
+        'A row of additional parking along the entrance drive is planned for feast days and future growth.'
       ]
     },
     {
@@ -76,7 +76,7 @@ window.DATA = {
         ['Shape', 'One long pond along the road'], ['Depth', '3 to 4 ft'],
         ['Footbridge', '20 ft wooden arch'], ['Purpose', 'Flood control']
       ],
-      description: 'A long, shallow pond runs the full length of the road frontage. It holds the rush of water after a Texas storm and lets it out slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, right on the centre line of the church, and cars cross on the entrance drive at the right.',
+      description: 'A long, shallow pond runs the full length of the road frontage. It holds the rush of water after a Texas storm and lets it out slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, right on the centre line of the church, and cars cross on the entrance drive at the right-hand end.',
       facts: [
         'Texas storms can drop inches of rain in an hour. The basin holds that surge and lets it out slowly.',
         'In a dry spell it turns into a green meadow, with the bridge as the welcome gate for anyone arriving on foot.',
@@ -104,7 +104,7 @@ window.DATA = {
       hint: 'The second big building, south-west of the church.',
       fact: 'Pope John Paul II beatified her in Kottayam in 1986. Pope Benedict XVI canonised her on 12 October 2008.' },
     { target: 'parking', item: 'Welcome Scroll', emoji: '📜', word: 'find',
-      clue: 'Everyone drives through me, though nobody stays. I come in from the road at the right side and circle the church.',
+      clue: 'Everyone drives through me, though nobody stays. I come in from the road at the far end and circle the church.',
       hint: 'Follow the loop drive around the church.',
       fact: 'Her tomb at Bharananganam draws pilgrims from across India and the world every July 28th, her feast day.' }
   ],

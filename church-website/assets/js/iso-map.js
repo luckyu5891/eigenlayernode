@@ -29,19 +29,20 @@ window.IsoMap = (function () {
   const CHURCH = { x0: 215, y0: 139, x1: 340, y1: 221, h: 22, rh: 18 };            // 125 x 82, front faces +x
   const CCD = { x0: 52, y0: 228, x1: 134, y1: 353, h: 16, rh: 12 };                // 82 x 125, turned 90 degrees to the church
   const LOOP = { x0: 168, y0: 93, x1: 395, y1: 267, w: 24, r: 40 };
-  const ENTRY = { y0: 250, y1: 274, xIn: 382 };                                   // car entrance on the right (south-east) side of the frontage
+  const ENTRY = { y0: 38, y1: 62, xIn: 318, legX0: 318, legX1: 342 };             // car entrance at the north end of the frontage (right-hand side seen from the road)
   const BAYS = [
-    { x0: 178, y0: 65, x1: 385, y1: 93, dir: 'y', ada: [0, 1] },
+    { x0: 178, y0: 65, x1: 314, y1: 93, dir: 'y', ada: [0, 1] },
     { x0: 178, y0: 267, x1: 385, y1: 295, dir: 'y', ada: [] },
     { x0: 144, y0: 105, x1: 168, y1: 255, dir: 'x', ada: [14, 15] },
     { x0: 395, y0: 105, x1: 417, y1: 158, dir: 'x', ada: [] },
-    { x0: 395, y0: 202, x1: 417, y1: 246, dir: 'x', ada: [] }
+    { x0: 395, y0: 202, x1: 417, y1: 255, dir: 'x', ada: [] },
+    { x0: 346, y0: 65, x1: 385, y1: 93, dir: 'y', ada: [] }
   ];
   const COURTS = [{ x0: 10, y0: 178, x1: 70, y1: 208 }, { x0: 78, y0: 178, x1: 138, y1: 208 }];
   // One continuous, mostly dry detention basin along the whole frontage (3 to 4 ft deep).
   const BASIN = { ta: 0.03, tb: 0.97, inset: 28, hw: 9 };
   const PED = { t: 0.426, w: 6 };                                                     // walkers' grand entrance on the church axis: wide steps, landing plaza, 20 ft arch bridge, promenade
-  const EXTRA_PARKING = { x0: 430, y0: 274, x1: 505, y1: 322 };                      // additional parking on the south-east lawn (placement to confirm)
+  const EXTRA_PARKING = { x0: 232, y0: 14, x1: 400, y1: 38 };                        // additional parking row along the entrance drive (placement to confirm)
   const FUTURE = [[30, 24], [150, 24], [150, 98], [30, 98]];                           // reserved for future construction (placement to confirm)
   const SEPTIC = [[218, 304], [300, 304], [300, 352], [218, 352]];                     // septic field, left as plain green
   const fx = y => 420 + RD[0] * (y / RD[1]);                                          // frontage x at a given y
@@ -188,7 +189,10 @@ window.IsoMap = (function () {
     // straight entry drive from the road, between the two ponds, on the church axis
     const e0 = roadEdgeX(ENTRY.y0) + 6, e1 = roadEdgeX(ENTRY.y1) + 6;
     poly(g, [[ENTRY.xIn, ENTRY.y0], [e0, ENTRY.y0], [e1, ENTRY.y1], [ENTRY.xIn, ENTRY.y1]], { fill: '#4b4f57' });
-    line(g, [LOOP.x1 - 4, 262, 0], [roadEdgeX(262) - 4, 262, 0], { stroke: '#e8c349', 'stroke-width': 1, 'stroke-dasharray': '6 6', opacity: .7 });
+    poly(g, [[ENTRY.legX0, ENTRY.y0], [ENTRY.legX1, ENTRY.y0], [ENTRY.legX1, LOOP.y0 + 6], [ENTRY.legX0, LOOP.y0 + 6]], { fill: '#4b4f57' });
+    const ym = (ENTRY.y0 + ENTRY.y1) / 2, xm = (ENTRY.legX0 + ENTRY.legX1) / 2;
+    line(g, [xm, ym, 0], [roadEdgeX(ym) - 4, ym, 0], { stroke: '#e8c349', 'stroke-width': 1, 'stroke-dasharray': '6 6', opacity: .7 });
+    line(g, [xm, ym, 0], [xm, LOOP.y0, 0], { stroke: '#e8c349', 'stroke-width': 1, 'stroke-dasharray': '6 6', opacity: .7 });
     // flared apron at the road
     poly(g, [[e0 - 14, ENTRY.y0 - 8], [e0 + 2, ENTRY.y0 - 8], [e0, ENTRY.y0], [e0 - 14, ENTRY.y0]], { fill: '#4b4f57' });
     poly(g, [[e1 - 14, ENTRY.y1], [e1, ENTRY.y1], [e1 + 2, ENTRY.y1 + 8], [e1 - 14, ENTRY.y1 + 8]], { fill: '#4b4f57' });
@@ -251,14 +255,14 @@ window.IsoMap = (function () {
     poly(g, basinShape(-0.5), { fill: '#b98a4a', opacity: .85 });  // mud rim
     poly(g, basinShape(-2), { fill: 'url(#water)' });               // water along the whole length
     S('polygon', { points: pts(basinShape(3)), fill: 'none', stroke: '#ffffff', 'stroke-width': .6, opacity: .25 }, g);
-    [0.14, 0.33, 0.52, 0.78, 0.9].forEach((t, i) => { const q = P(...off(r(t), BASIN.inset + (i % 2 ? 2 : -2)), 0); S('ellipse', { cx: q[0], cy: q[1], rx: 8, ry: 1.6, fill: '#ffffff', opacity: .28 }, g); });
+    [0.22, 0.33, 0.52, 0.78, 0.9].forEach((t, i) => { const q = P(...off(r(t), BASIN.inset + (i % 2 ? 2 : -2)), 0); S('ellipse', { cx: q[0], cy: q[1], rx: 8, ry: 1.6, fill: '#ffffff', opacity: .28 }, g); });
   }
   function drawExtraParking() {
     const g = S('g', { 'data-item': 'parking', class: 'item' }, layers.ground); itemParts.parking.push(g);
     const L = EXTRA_PARKING;
     poly(g, [[L.x0, L.y0], [L.x1, L.y0], [L.x1, L.y1], [L.x0, L.y1]], { fill: '#4b4f57' });
-    for (let x = L.x0; x <= L.x1; x += 9) { line(g, [x, L.y0, 0], [x, L.y0 + 18, 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 }); line(g, [x, L.y1 - 18, 0], [x, L.y1, 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 }); }
-    const c = P((L.x0 + L.x1) / 2, (L.y0 + L.y1) / 2, 0); S('text', { x: c[0], y: c[1] + 2.5, 'text-anchor': 'middle', 'font-size': 6.5, 'font-weight': 800, fill: '#ffffff', opacity: .8, 'letter-spacing': .5 }, g).textContent = 'ADDITIONAL PARKING';
+    for (let x = L.x0; x <= L.x1; x += 9) line(g, [x, L.y0, 0], [x, L.y1, 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 });
+    const c = P((L.x0 + L.x1) / 2, L.y0 - 6, 0); S('text', { x: c[0], y: c[1] + 2.5, 'text-anchor': 'middle', 'font-size': 6.5, 'font-weight': 800, fill: '#ffffff', opacity: .8, 'letter-spacing': .5 }, g).textContent = 'ADDITIONAL PARKING';
   }
   function drawZones() {
     const g = layers.ground;
@@ -399,13 +403,13 @@ window.IsoMap = (function () {
     line(g2, [b[0], b[1], 0], [b[0], b[1], 6.5], { stroke: '#2b2a28', 'stroke-width': 1 });
     objs.push({ depth: a[1] - a[0], node: g2 });
     // monument sign south of the drive
-    const sgn = off(r(0.60), 16), g3 = S('g', { 'data-item': 'church', class: 'item' }, null); itemParts.church.push(g3);
+    const sgn = off(r(0.21), 14), g3 = S('g', { 'data-item': 'church', class: 'item' }, null); itemParts.church.push(g3);
     box(g3, sgn[0] - 7, sgn[1] - 1.5, sgn[0] + 7, sgn[1] + 1.5, 0, 5.5, '#c9b892');
     const cp = P(sgn[0] - 5, sgn[1] + 1.6, 3.4); S('text', { x: cp[0], y: cp[1], 'font-size': 3.4, 'font-weight': 800, fill: '#2f5d50' }, g3).textContent = '✝ St. Alphonsa';
     objs.push({ depth: sgn[1] - sgn[0], node: g3 });
   }
   function drawPoles(objs) {
-    [[190, 58], [380, 58], [190, 302], [380, 302], [406, 98], [406, 240], [470, 244]].forEach(([x, y]) => {
+    [[190, 58], [380, 58], [190, 302], [380, 302], [406, 98], [406, 240], [430, 26]].forEach(([x, y]) => {
       const g = S('g', {}, null);
       line(g, [x, y, 0], [x, y, 22], { stroke: '#8a8f99', 'stroke-width': 1 });
       const t = P(x, y, 22); S('ellipse', { cx: t[0], cy: t[1], rx: 3, ry: 1.2, fill: '#fff3c4' }, g);
@@ -426,16 +430,15 @@ window.IsoMap = (function () {
       [40, -12, 26, 12, '#2f7a44'], [120, -14, 22, 10, '#57a34a'], [200, -12, 26, 12, '#3f8f3f'], [280, -14, 22, 10, '#4c9c45'], [360, -12, 24, 11, '#2f7a44'],
       [200, 127, 14, 6, '#6fbf5a'], [200, 233, 14, 6, '#6fbf5a'], [363, 127, 14, 6, '#6fbf5a'], [363, 233, 14, 6, '#6fbf5a'],
       [160, 300, 20, 9, '#4c9c45'], [160, 340, 18, 8, '#2f7a44'], [20, 150, 20, 9, '#3f8f3f'], [100, 140, 22, 10, '#57a34a'], [60, 100, 24, 11, '#4c9c45'],
-      [400, 50, 20, 9, '#57a34a'],
-      [445, 205, 18, 8, '#57a34a'], [500, 350, 20, 9, '#2f7a44']
+      [445, 205, 18, 8, '#57a34a'], [430, 245, 20, 9, '#3f8f3f'], [470, 300, 22, 10, '#4c9c45'], [500, 350, 20, 9, '#2f7a44'], [440, 330, 18, 8, '#57a34a']
     ];
     for (let t = -0.9; t <= 1.9; t += 0.16) { const p = off(r(t), -78); list.push([p[0], p[1], 26, 12, ['#3f8f3f', '#2f7a44', '#57a34a'][Math.abs(Math.round(t * 10)) % 3]]); }
     list.forEach(([x, y, h, rad, col]) => objs.push({ depth: y - x, node: tree(null, x, y, h, rad, col) }));
   }
   function drawPondObjects(objs) {
     const g = S('g', { 'data-item': 'pond', class: 'item' }, null); itemParts.pond.push(g);
-    [0.12, 0.3, 0.56, 0.8, 0.92].forEach((t, i) => { const c0 = P(...off(r(t), BASIN.inset + (i % 2 ? 3 : -3)), 0); S('ellipse', { class: 'ripple', cx: c0[0], cy: c0[1], rx: 7, ry: 3, fill: 'none', stroke: '#fff', 'stroke-width': 1, style: `animation-delay:${-i * 0.7}s` }, g); });
-    [0.08, 0.2, 0.3, 0.56, 0.62, 0.78, 0.9, 0.96].forEach((t, i) => { const p = off(r(t), BASIN.inset + (i % 2 ? 6 : -6)); for (let k = 0; k < 3; k++) line(g, [p[0] + k * 1.5, p[1] - k, 0], [p[0] + k * 1.5 + .6, p[1] - k, 5 + (k % 2) * 2], { stroke: '#3f8a3f', 'stroke-width': .9, 'stroke-linecap': 'round' }); });
+    [0.25, 0.35, 0.56, 0.8, 0.92].forEach((t, i) => { const c0 = P(...off(r(t), BASIN.inset + (i % 2 ? 3 : -3)), 0); S('ellipse', { class: 'ripple', cx: c0[0], cy: c0[1], rx: 7, ry: 3, fill: 'none', stroke: '#fff', 'stroke-width': 1, style: `animation-delay:${-i * 0.7}s` }, g); });
+    [0.05, 0.22, 0.32, 0.56, 0.62, 0.78, 0.9, 0.96].forEach((t, i) => { const p = off(r(t), BASIN.inset + (i % 2 ? 6 : -6)); for (let k = 0; k < 3; k++) line(g, [p[0] + k * 1.5, p[1] - k, 0], [p[0] + k * 1.5 + .6, p[1] - k, 5 + (k % 2) * 2], { stroke: '#3f8a3f', 'stroke-width': .9, 'stroke-linecap': 'round' }); });
     const dk = P(...off(r(0.65), BASIN.inset + 1), 0); S('ellipse', { cx: dk[0], cy: dk[1], rx: 2.4, ry: 1.3, fill: '#fff' }, g); S('circle', { cx: dk[0] + 2, cy: dk[1] - 1.4, r: 1.1, fill: '#fff' }, g);
     const dk2 = P(...off(r(0.24), BASIN.inset - 2), 0); S('ellipse', { cx: dk2[0], cy: dk2[1], rx: 2.2, ry: 1.2, fill: '#f7dfa0' }, g); S('circle', { cx: dk2[0] - 2, cy: dk2[1] - 1.3, r: 1, fill: '#f7dfa0' }, g);
     const c = off(r(0.5), BASIN.inset); objs.push({ depth: c[1] - c[0] + 40, node: g });
@@ -497,7 +500,7 @@ window.IsoMap = (function () {
     const g = S('g', { class: 'loop-car' }, layers.objects);
     const c = roundedRect(LOOP.x0 + LOOP.w / 2, LOOP.y0 + LOOP.w / 2, LOOP.x1 - LOOP.w / 2, LOOP.y1 - LOOP.w / 2, LOOP.r - LOOP.w / 2, 5).map(p => P(p[0], p[1], 0));
     // start on the road, come down the entry, join the loop at its east side and go around twice
-    const start = P(roadEdgeX(262) - 2, 262, 0), bend = P(LOOP.x1 - 2, 262, 0), join = P(LOOP.x1 - LOOP.w / 2, 236, 0);
+    const start = P(roadEdgeX(50) - 2, 50, 0), bend = P(330, 50, 0), join = P(330, LOOP.y0 + LOOP.w / 2, 0);
     const jIdx = c.reduce((best, p, i) => Math.hypot(p[0] - join[0], p[1] - join[1]) < Math.hypot(c[best][0] - join[0], c[best][1] - join[1]) ? i : best, 0);
     const ring = c.slice(jIdx).concat(c.slice(0, jIdx)).reverse();
     const pathD = `M${start[0].toFixed(1)},${start[1].toFixed(1)} L${bend[0].toFixed(1)},${bend[1].toFixed(1)} L${join[0].toFixed(1)},${join[1].toFixed(1)} ` + ring.map(p => `L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ') + ` L${join[0].toFixed(1)},${join[1].toFixed(1)} L${bend[0].toFixed(1)},${bend[1].toFixed(1)} L${start[0].toFixed(1)},${start[1].toFixed(1)}`;
@@ -523,7 +526,7 @@ window.IsoMap = (function () {
     church: () => P(226, 180, CHURCH.h + CHURCH.rh + 36),
     ccd: () => P(93, 246, CCD.h + CCD.rh + 30),
     courts: () => P(28, 193, 34),
-    parking: () => P(284, 281, 24),
+    parking: () => P(250, 283, 24),
     pond: () => { const c = off(r(0.2), BASIN.inset); return P(c[0], c[1], 30); }
   };
   function drawTags() {
@@ -567,7 +570,7 @@ window.IsoMap = (function () {
       let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
       const grow = b => { if (!b.width && !b.height) return; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); };
       grow(layers.tags.getBBox()); ['church', 'ccd', 'courts'].forEach(id => itemParts[id].forEach(pt => grow(pt.getBBox())));
-      x0 -= 22; y0 -= 12; x1 += 12; y1 += 10;
+      x0 -= 22; y0 -= 12; x1 += 34; y1 += 10;   // extra room on the right for the zoom buttons
       let w = x1 - x0, h = y1 - y0; if (w / h < stageAspect) w = h * stageAspect; else h = w / stageAspect;
       view.w = w; view.h = h; view.x = (x0 + x1) / 2 - w / 2; view.y = (y0 + y1) / 2 - h / 2; applyView();
     }

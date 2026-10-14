@@ -16,7 +16,7 @@ window.DATA = {
       ],
       description: 'The heart of the new campus. A single-nave church with a stone gable façade, a statue of St. Alphonsa above the entrance, tall arched windows, and room for 400 worshippers at Holy Qurbana.',   // PLACEHOLDER
       facts: [
-        'The sanctuary faces the main drive so the cross greets everyone arriving from County Road 175.',
+        'The sanctuary faces County Road 175, so the cross greets everyone arriving over the footbridge.',
         'Limestone on the façade echoes the Texas Hill Country while the pointed arches recall Kerala\'s historic Syro-Malabar churches.',   // PLACEHOLDER verify
         'St. Alphonsa (1910 to 1946) was the first woman of Indian origin to be canonised, in 2008.'
       ]
@@ -59,28 +59,28 @@ window.DATA = {
       meta: [
         ['Spaces', 'About 120'],                                                // PLACEHOLDER verify exact count
         ['Accessible', '8'],                                                    // PLACEHOLDER
-        ['Entrance', 'Straight drive from CR 175'], ['Layout', 'One-way loop']
+        ['Car entrance', 'Right side, off CR 175'], ['Layout', 'One-way loop']
       ],
-      description: 'The entrance drive runs straight in from County Road 175, across the green basin, to the church doors. A one-way loop then wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
+      description: 'Cars enter from County Road 175 at the right side of the property, cross the pond on a culvert, and join a one-way loop that wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
       facts: [
-        'Walkers get their own entrance: five steps up from the road, then a 20 ft wooden arch bridge over the green basin, lit by Victorian style lamp posts.',
+        'Walkers get a grand entrance right in the centre: wide steps up from the road, a landing, a 20 ft wooden arch bridge over the pond, and a lamp-lit promenade straight to the church doors.',
         'The whole loop is one way, so nobody has to reverse into traffic.',
         'An additional parking area is planned for feast days and future growth.'
       ]
     },
     {
-      id: 'pond', name: 'Detention Pond', kind: 'Green stormwater basin and footbridge', icon: '🌿',
+      id: 'pond', name: 'Detention Pond', kind: 'Long stormwater pond and footbridge', icon: '🌊',
       game: 'fishing', gameName: 'Gone Fishing', gameBlurb: 'Tap to cast, tap on the bite, hold to reel. Every catch unlocks a fact.',
       imageKey: 'pond',
       meta: [
-        ['Shape', 'One continuous green strip'], ['Depth', '3 to 4 ft'],
+        ['Shape', 'One long pond along the road'], ['Depth', '3 to 4 ft'],
         ['Footbridge', '20 ft wooden arch'], ['Purpose', 'Flood control']
       ],
-      description: 'A shallow grassy basin runs the full length of the road frontage. Dry most of the year, it fills for a day or two after a big Texas storm and drains slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, and cars cross on the entrance drive.',
+      description: 'A long, shallow pond runs the full length of the road frontage. It holds the rush of water after a Texas storm and lets it out slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, right on the centre line of the church, and cars cross on the entrance drive at the right.',
       facts: [
         'Texas storms can drop inches of rain in an hour. The basin holds that surge and lets it out slowly.',
-        'When dry, it is a green meadow framing the entrance, with the bridge as the welcome gate for anyone arriving on foot.',
-        'Fishing is strictly a game here. Most days the real pond is just grass.'
+        'In a dry spell it turns into a green meadow, with the bridge as the welcome gate for anyone arriving on foot.',
+        'Fishing is strictly a game here. Please admire the ducks from the bridge.'
       ]
     }
   ],
@@ -93,7 +93,7 @@ window.DATA = {
       fact: 'St. Alphonsa was born Anna Muttathupadathu in Kudamaloor, Kerala, in 1910.' },
     { target: 'pond', item: 'Blue Marble', emoji: '🔵', word: 'and',
       clue: 'I fill when the sky opens and empty when it clears. Walkers cross me on a wooden bridge.',
-      hint: 'The long green strip along the road, the one with the little bridge.',
+      hint: 'The long pond along the road, the one with the bridge in the middle.',
       fact: 'She took the name Alphonsa in honour of St. Alphonsus Liguori when she entered the Franciscan Clarist Congregation.' },
     { target: 'courts', item: 'Bronze Whistle', emoji: '📣', word: 'you',
       clue: 'Twice sixty by thirty. Where sneakers squeak and the youth group settles arguments.',
@@ -104,7 +104,7 @@ window.DATA = {
       hint: 'The second big building, south-west of the church.',
       fact: 'Pope John Paul II beatified her in Kottayam in 1986. Pope Benedict XVI canonised her on 12 October 2008.' },
     { target: 'parking', item: 'Welcome Scroll', emoji: '📜', word: 'find',
-      clue: 'Everyone passes through me, though nobody stays. I run in from the road between two ponds and circle the church.',
+      clue: 'Everyone drives through me, though nobody stays. I come in from the road at the right side and circle the church.',
       hint: 'Follow the loop drive around the church.',
       fact: 'Her tomb at Bharananganam draws pilgrims from across India and the world every July 28th, her feast day.' }
   ],
@@ -152,10 +152,10 @@ window.DATA = {
 
   /* ---------- Fishing: catches and the pond facts they unlock ---------- */
   fish: [
-    { name: 'Bluegill', emoji: '🐟', pts: 10, fact: 'Detention basins are usually dry. They fill for a day or two after a storm, then drain slowly.' },
+    { name: 'Bluegill', emoji: '🐟', pts: 10, fact: 'Detention ponds hold storm water and let it out slowly over a day or two, so the road downstream never floods.' },
     { name: 'Largemouth Bass', emoji: '🐠', pts: 25, fact: 'The basin protects County Road 175: without it, a big storm would send a wall of water off the parking lot into the road.' },
     { name: 'Channel Catfish', emoji: '🐡', pts: 30, fact: 'The muddiest first flush of a storm settles out in the basin, so cleaner water leaves the property.' },
-    { name: 'Golden Koi', emoji: '✨', pts: 60, fact: 'Grass on the basin floor slows the water down and filters it naturally.' },
+    { name: 'Golden Koi', emoji: '✨', pts: 60, fact: 'Plants along the banks slow the water down and filter it naturally.' },
     { name: 'Old Boot', emoji: '🥾', pts: 2, fact: 'Please do not actually fish here. When it is dry, it makes a fine meadow for a picnic.' },
     { name: 'Texas Turtle', emoji: '🐢', pts: 15, fact: 'A 20 ft wooden arch bridge carries walkers over the basin from the road to the church, with lamp posts to light the way.' }
   ]

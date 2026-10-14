@@ -149,7 +149,7 @@ button { font: inherit; }
 .hunt-found { display: flex; gap: 5px; }
 .hunt-found span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--bg-2); border: 2px dashed var(--border-strong); font-size: .95rem; }
 .hunt-found span.got { background: rgba(242,193,78,.2); border-style: solid; border-color: var(--gold); }
-@media (max-width: 899px) { .hunt-banner { top: auto; bottom: 14px; left: 10px; right: 10px; z-index: 7; } .hunt-banner .clue em { font-size: .92rem; } }
+@media (max-width: 899px) { .hunt-banner { top: auto; bottom: 14px; left: 10px; right: 10px; z-index: 7; } .hunt-banner .clue em { font-size: .92rem; } .stage-ui { top: auto; bottom: 128px; right: 10px; transform: none; } }
 
 /* ---------- Detail panel ---------- */
 .panel { position: absolute; z-index: 30; background: var(--surface); color: var(--text); box-shadow: var(--shadow); display: flex; flex-direction: column; transition: transform .45s cubic-bezier(.2,.9,.25,1), opacity .3s; border: 1px solid var(--border); }

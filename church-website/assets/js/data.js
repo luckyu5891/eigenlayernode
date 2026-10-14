@@ -18,8 +18,7 @@ window.DATA = {
       facts: [
         'The sanctuary faces the main drive so the cross greets everyone arriving from County Road 175.',
         'Limestone on the façade echoes the Texas Hill Country while the pointed arches recall Kerala\'s historic Syro-Malabar churches.',   // PLACEHOLDER verify
-        'St. Alphonsa (1910 to 1946) was the first woman of Indian origin to be canonised, in 2008.',
-        'Finished floor sits at 888.5 ft above sea level, about a foot below the CCD building next door.'
+        'St. Alphonsa (1910 to 1946) was the first woman of Indian origin to be canonised, in 2008.'
       ]
     },
     {
@@ -35,7 +34,6 @@ window.DATA = {
       facts: [
         'Same footprint as the church but turned ninety degrees, so the two buildings frame the courts and the loop between them.',
         'Classrooms convert to one large hall for feasts, weddings, and Onam and Christmas celebrations.',   // PLACEHOLDER
-        'A gravel fire lane loops behind the building, rated for a 75,000 lb fire truck.',
         'Accessible parking sits right at the entrance for the youngest and oldest parishioners.'
       ]
     },
@@ -63,27 +61,26 @@ window.DATA = {
         ['Accessible', '8'],                                                    // PLACEHOLDER
         ['Entrance', 'Straight drive from CR 175'], ['Layout', 'One-way loop']
       ],
-      description: 'The entrance drive runs straight in from County Road 175, between the two ponds, to the church doors. A one-way loop then wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
+      description: 'The entrance drive runs straight in from County Road 175, across the green basin, to the church doors. A one-way loop then wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
       facts: [
-        'The entrance has a 6 ft sliding wrought-iron gate with a Knox key switch so fire crews can enter any time.',
-        'The whole loop is sized for fire trucks to circle the church without stopping.',
-        'Overflow parking on feast days uses the gravel lane behind the CCD building.'   // PLACEHOLDER
+        'Walkers get their own entrance: five steps up from the road, then a 20 ft wooden arch bridge over the green basin, lit by Victorian style lamp posts.',
+        'The whole loop is one way, so nobody has to reverse into traffic.',
+        'An additional parking area is planned for feast days and future growth.'
       ]
     },
     {
-      id: 'pond', name: 'Detention Ponds', kind: 'Stormwater and water quality', icon: '🌊',
-      game: 'fishing', gameName: 'Gone Fishing', gameBlurb: 'Cast, wait for the bite, reel it in. Every catch unlocks a pond fact.',
+      id: 'pond', name: 'Detention Pond', kind: 'Green stormwater basin and footbridge', icon: '🌿',
+      game: 'fishing', gameName: 'Gone Fishing', gameBlurb: 'Tap to cast, tap on the bite, hold to reel. Every catch unlocks a fact.',
       imageKey: 'pond',
       meta: [
-        ['Ponds', '2, matching'], ['Spillway', '20 ft wide at 882.25 ft'],
-        ['Purpose', 'Flood control and filtration'], ['Location', 'Either side of the entrance']
+        ['Shape', 'One continuous green strip'], ['Depth', '3 to 4 ft'],
+        ['Footbridge', '20 ft wooden arch'], ['Purpose', 'Flood control']
       ],
-      description: 'Two matching basins flank the entrance drive along the road frontage. They slow rainwater rushing off roofs and parking and clean it before it leaves the property.',   // PLACEHOLDER
+      description: 'A shallow grassy basin runs the full length of the road frontage. Dry most of the year, it fills for a day or two after a big Texas storm and drains slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, and cars cross on the entrance drive.',
       facts: [
-        'Texas storms can drop inches of rain in an hour. The pond holds that surge and releases it slowly.',
-        'A splitter box sends the first, dirtiest flush of runoff to the sedimentation basin for cleaning.',
-        'When dry, the ponds are grassy meadows framing the entrance. Fishing is strictly a game here.',
-        'A 20 ft emergency spillway protects the road if the pond ever overtops.'
+        'Texas storms can drop inches of rain in an hour. The basin holds that surge and lets it out slowly.',
+        'When dry, it is a green meadow framing the entrance, with the bridge as the welcome gate for anyone arriving on foot.',
+        'Fishing is strictly a game here. Most days the real pond is just grass.'
       ]
     }
   ],
@@ -95,8 +92,8 @@ window.DATA = {
       hint: 'It is the biggest building, with the cross on the roof.',
       fact: 'St. Alphonsa was born Anna Muttathupadathu in Kudamaloor, Kerala, in 1910.' },
     { target: 'pond', item: 'Blue Marble', emoji: '🔵', word: 'and',
-      clue: 'I fill when the sky opens and empty when it clears. I keep the road dry and the creek clean.',
-      hint: 'Look beside the entrance drive, where the ground dips on both sides.',
+      clue: 'I fill when the sky opens and empty when it clears. Walkers cross me on a wooden bridge.',
+      hint: 'The long green strip along the road, the one with the little bridge.',
       fact: 'She took the name Alphonsa in honour of St. Alphonsus Liguori when she entered the Franciscan Clarist Congregation.' },
     { target: 'courts', item: 'Bronze Whistle', emoji: '📣', word: 'you',
       clue: 'Twice sixty by thirty. Where sneakers squeak and the youth group settles arguments.',
@@ -155,11 +152,11 @@ window.DATA = {
 
   /* ---------- Fishing: catches and the pond facts they unlock ---------- */
   fish: [
-    { name: 'Bluegill', emoji: '🐟', pts: 10, fact: 'Detention ponds are usually dry. They fill for a day or two after a storm, then drain slowly through an outlet.' },
-    { name: 'Largemouth Bass', emoji: '🐠', pts: 25, fact: 'The pond protects County Road 175: without it, a big storm would send a wall of water off the parking lot into the road.' },
-    { name: 'Channel Catfish', emoji: '🐡', pts: 30, fact: 'A splitter box separates the first flush of dirty runoff, which goes to the sedimentation basin to settle out grit and oil.' },
-    { name: 'Golden Koi', emoji: '✨', pts: 60, fact: 'The filtration basin at the east corner uses layers of sand and soil to clean water before it leaves the site.' },
+    { name: 'Bluegill', emoji: '🐟', pts: 10, fact: 'Detention basins are usually dry. They fill for a day or two after a storm, then drain slowly.' },
+    { name: 'Largemouth Bass', emoji: '🐠', pts: 25, fact: 'The basin protects County Road 175: without it, a big storm would send a wall of water off the parking lot into the road.' },
+    { name: 'Channel Catfish', emoji: '🐡', pts: 30, fact: 'The muddiest first flush of a storm settles out in the basin, so cleaner water leaves the property.' },
+    { name: 'Golden Koi', emoji: '✨', pts: 60, fact: 'Grass on the basin floor slows the water down and filters it naturally.' },
     { name: 'Old Boot', emoji: '🥾', pts: 2, fact: 'Please do not actually fish here. When it is dry, it makes a fine meadow for a picnic.' },
-    { name: 'Texas Turtle', emoji: '🐢', pts: 15, fact: 'A 20 ft wide emergency spillway at 882.25 ft lets extreme storms overflow safely instead of over the banks.' }
+    { name: 'Texas Turtle', emoji: '🐢', pts: 15, fact: 'A 20 ft wooden arch bridge carries walkers over the basin from the road to the church, with lamp posts to light the way.' }
   ]
 };

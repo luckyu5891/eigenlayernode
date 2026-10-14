@@ -1,4 +1,4 @@
-/* GONE FISHING | hold to cast, tap on the bite, hold to reel. Each catch unlocks a pond fact. */
+/* GONE FISHING | tap to cast, tap on the bite, hold to reel. Simple on purpose. Two catches earn the stamp. */
 (function () {
   'use strict';
   const { $, esc, Passport, Sfx } = window.App; const D = window.DATA;
@@ -8,52 +8,51 @@
   window.Games.fishing = {
     mount(h, cx) {
       host = h; ctx = cx;
-      host.innerHTML = `<div class="g-top"><p>Press and hold to charge your cast, release to throw. When the bobber dips, tap fast. Then hold to reel and let go when the line turns red. Three catches earn the stamp.</p>
+      host.innerHTML = `<div class="g-top"><p>Tap the water to cast. When the bobber dips and you see the !, tap again. Then press and hold to reel it in. Two catches earn the stamp.</p>
         <div class="scoreboard"><div class="stat"><div class="label">Catches</div><div class="value" id="fs-n">0</div></div><div class="stat"><div class="label">Points</div><div class="value" id="fs-pts">0</div></div><div class="stat"><div class="label">Best</div><div class="value" id="fs-best">${Passport.score('Gone Fishing') || 0}</div></div></div></div>
         <canvas class="game-canvas" id="fs-canvas" width="720" height="480" style="aspect-ratio:3/2"></canvas>
         <div class="g-msg" id="fs-msg"></div>
         <div id="fs-facts" class="stack"></div>`;
       cv = $('#fs-canvas', host); c = cv.getContext('2d');
-      st = { phase: 'ready', power: 0, t: 0, catches: 0, pts: 0, facts: [], bobber: null, fish: null, tension: 0, progress: 0, msg: 'Hold to cast', ripples: [], splash: 0 };
+      st = { phase: 'ready', power: 0, t: 0, catches: 0, pts: 0, facts: [], bobber: null, fish: null, tension: 0, progress: 0, msg: 'Tap to cast', ripples: [], splash: 0 };
       const down = e => { e.preventDefault(); holding = true; onDown(); }; const up = e => { holding = false; onUp(); };
       cv.addEventListener('pointerdown', down); cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up); cv.addEventListener('pointerleave', () => { if (holding) { holding = false; onUp(); } });
       this.kd = e => { if (e.code === 'Space' && !holding) { e.preventDefault(); holding = true; onDown(); } }; this.ku = e => { if (e.code === 'Space') { holding = false; onUp(); } };
       document.addEventListener('keydown', this.kd); document.addEventListener('keyup', this.ku);
+      window.__fishState = () => st;
       last = performance.now(); raf = requestAnimationFrame(loop);
     },
     unmount() { cancelAnimationFrame(raf); document.removeEventListener('keydown', this.kd); document.removeEventListener('keyup', this.ku); }
   };
 
   function onDown() {
-    if (st.phase === 'ready' || st.phase === 'result') { st.phase = 'charging'; st.power = 0; st.msg = 'Release to cast'; }
+    if (st.phase === 'ready' || st.phase === 'result') { st.power = 0.45 + Math.random() * 0.45; cast(); }
     else if (st.phase === 'bite') hook();
-    else if (st.phase === 'waiting') { st.msg = 'Patience… wait for the dip'; }
+    else if (st.phase === 'waiting') { st.msg = 'Wait for the ! then tap'; }
   }
-  function onUp() {
-    if (st.phase === 'charging') cast();
-  }
+  function onUp() {}
   function cast() {
     const p = Math.max(.15, st.power); st.phase = 'flying'; st.t = 0; Sfx.play('whoosh');
     const dist = 120 + p * 480; st.bobber = { x0: 120, y0: 170, x1: 120 + dist, y1: WATER + 30 + p * 120, x: 120, y: 170 }; st.castPower = p; st.msg = '';
   }
   function land() {
-    st.phase = 'waiting'; st.t = 0; st.biteAt = 1.6 + Math.random() * 3.5; st.nibbleAt = st.biteAt * (0.35 + Math.random() * .3); st.nibbled = false; st.msg = 'Waiting for a bite…'; Sfx.play('splash'); st.splash = .6; addRipple();
+    st.phase = 'waiting'; st.t = 0; st.biteAt = 1.2 + Math.random() * 2.2; st.nibbleAt = st.biteAt * (0.35 + Math.random() * .3); st.nibbled = false; st.msg = 'Waiting for a bite… watch the bobber'; Sfx.play('splash'); st.splash = .6; addRipple();
   }
-  function bite() { st.phase = 'bite'; st.t = 0; st.msg = 'Now! Tap!'; Sfx.play('coin'); addRipple(); }
+  function bite() { st.phase = 'bite'; st.t = 0; st.msg = 'Now! Tap!'; Sfx.play('coin'); addRipple(); if (holding) setTimeout(() => { if (st.phase === 'bite') hook(); }, 350); }   // a finger already on the screen counts as the tap
   function hook() {
     st.phase = 'reeling'; st.t = 0; st.tension = .3; st.progress = 0;
     const roll = Math.random(), far = st.castPower;
     let pool = D.fish.filter(f => f.name !== 'Old Boot'); if (roll < 0.1) pool = D.fish.filter(f => f.name === 'Old Boot');
     else if (far > .7 && roll < .5) pool = pool.filter(f => f.pts >= 25);
-    st.fish = pool[Math.floor(Math.random() * pool.length)]; st.fishPull = st.fish.pts >= 25 ? 1.35 : 1; st.msg = 'Hold to reel, release when red';
+    st.fish = pool[Math.floor(Math.random() * pool.length)]; st.fishPull = st.fish.pts >= 25 ? 1.35 : 1; st.msg = 'Hold to reel it in!';
   }
   function caught() {
     st.phase = 'result'; st.t = 0; st.catches++; st.pts += st.fish.pts; st.msg = `${st.fish.emoji} ${st.fish.name}! +${st.fish.pts}`; Sfx.play('win');
     $('#fs-n', host).textContent = st.catches; $('#fs-pts', host).textContent = st.pts;
     if (!st.facts.includes(st.fish.fact)) { st.facts.push(st.fish.fact); const d = document.createElement('div'); d.className = 'card sand'; d.style.padding = '12px 14px'; d.innerHTML = `<strong>${st.fish.emoji} ${esc(st.fish.name)}</strong><div class="small">${esc(st.fish.fact)}</div>`; $('#fs-facts', host).prepend(d); }
     if (Passport.best('Gone Fishing', st.pts)) $('#fs-best', host).textContent = st.pts;
-    if (st.catches === 3) ctx.stamp('Caught three fish');
-    $('#fs-msg', host).textContent = st.catches >= 3 ? 'Stamp earned. Keep fishing for a high score.' : `${3 - st.catches} more for the stamp.`;
+    if (st.catches === 2) ctx.stamp('Caught two fish');
+    $('#fs-msg', host).textContent = st.catches >= 2 ? 'Stamp earned. Keep fishing for a high score.' : 'One more for the stamp.';
   }
   function lost(why) { st.phase = 'result'; st.t = 0; st.msg = why; Sfx.play('bad'); st.fish = null; }
   function addRipple() { if (st.bobber) st.ripples.push({ x: st.bobber.x, y: st.bobber.y, r: 4, a: .8 }); }
@@ -72,16 +71,16 @@
       if (st.t > st.biteAt) bite();
       if (Math.random() < dt * .4) addRipple();
     }
-    else if (st.phase === 'bite') { st.bobber.y = st.bobber.y1 + 10 + Math.sin(st.t * 18) * 4; if (st.t > 1.0) lost('It got away. Cast again.'); }
+    else if (st.phase === 'bite') { st.bobber.y = st.bobber.y1 + 10 + Math.sin(st.t * 18) * 4; if (st.t > 2.6) lost('It got away. Tap to cast again.'); }
     else if (st.phase === 'reeling') {
       const pull = st.fishPull * (0.9 + Math.sin(st.t * 3.1) * .5);
-      if (holding) { st.tension += dt * (1.1 * pull); st.progress += dt * (st.tension < .75 ? .42 : .15); } else st.tension -= dt * 1.3;
-      st.tension = Math.max(0, st.tension);
+      // the line never breaks: holding always reels, big fish just take a little longer
+      if (holding) { st.tension = Math.min(1, st.tension + dt * .8 * pull); st.progress += dt * (0.4 / st.fishPull); } else { st.tension = Math.max(0, st.tension - dt * 1.3); st.msg = 'Keep holding to reel'; }
+      if (holding) st.msg = 'Hold to reel it in!';
       st.bobber.x -= dt * 40 * st.progress; st.bobber.y = st.bobber.y1 + Math.sin(st.t * 12) * 3;
-      if (st.tension > 1) return lost('Snap! The line broke. Ease off when it turns red.');
       if (st.progress >= 1) caught();
     }
-    else if (st.phase === 'result') { if (st.t > 2.2) { st.phase = 'ready'; st.msg = 'Hold to cast'; st.bobber = null; } }
+    else if (st.phase === 'result') { if (st.t > 2.2) { st.phase = 'ready'; st.msg = 'Tap to cast'; st.bobber = null; } }
   }
   function draw() {
     // sky
@@ -104,10 +103,10 @@
     const rodTip = [150, 150]; c.strokeStyle = '#3b2b1e'; c.lineWidth = 3; c.beginPath(); c.moveTo(112, WATER - 40); c.lineTo(...rodTip); c.stroke();
     // line & bobber
     if (st.bobber) {
-      const b = st.bobber; c.strokeStyle = st.phase === 'reeling' ? (st.tension > .75 ? '#e63946' : '#fff') : 'rgba(255,255,255,.8)'; c.lineWidth = st.phase === 'reeling' ? 2 : 1;
+      const b = st.bobber; c.strokeStyle = st.phase === 'reeling' ? '#fff' : 'rgba(255,255,255,.8)'; c.lineWidth = st.phase === 'reeling' ? 2 : 1;
       c.beginPath(); c.moveTo(...rodTip); c.quadraticCurveTo((rodTip[0] + b.x) / 2, Math.max(rodTip[1], b.y) - (st.phase === 'flying' ? 60 : -20), b.x, b.y); c.stroke();
       c.fillStyle = '#e63946'; c.beginPath(); c.arc(b.x, b.y, 7, Math.PI, 0); c.fill(); c.fillStyle = '#fff'; c.beginPath(); c.arc(b.x, b.y, 7, 0, Math.PI); c.fill();
-      if (st.phase === 'bite') { c.fillStyle = '#ffd166'; c.font = '900 30px Nunito, sans-serif'; c.textAlign = 'center'; c.fillText('!', b.x, b.y - 18); }
+      if (st.phase === 'bite') { c.fillStyle = '#ffd166'; c.font = '900 44px Nunito, sans-serif'; c.textAlign = 'center'; c.fillText('!', b.x, b.y - 22); c.font = '800 16px Nunito, sans-serif'; c.fillText('TAP!', b.x, b.y - 66); }
       if (st.phase === 'reeling' && st.fish) { c.fillStyle = 'rgba(20,33,61,.5)'; c.beginPath(); c.ellipse(b.x + 24 + Math.sin(st.t * 6) * 6, b.y + 26, 18, 8, .3, 0, 7); c.fill(); }
     }
     if (st.splash > 0 && st.bobber) { c.fillStyle = `rgba(255,255,255,${st.splash})`; for (let i = 0; i < 6; i++) { c.beginPath(); c.arc(st.bobber.x + Math.cos(i) * 14 * (1 - st.splash), st.bobber.y - 10 * (1 - st.splash) * Math.sin(i * 1.3), 3, 0, 7); c.fill(); } }
@@ -115,10 +114,9 @@
     if (st.phase === 'charging') { c.fillStyle = 'rgba(20,33,61,.6)'; c.fillRect(30, 30, 200, 18); c.fillStyle = st.power > .8 ? '#ffd166' : '#06d6a0'; c.fillRect(32, 32, 196 * st.power, 14); c.fillStyle = '#fff'; c.font = '800 13px Nunito, sans-serif'; c.textAlign = 'left'; c.fillText('Power', 34, 62); }
     // tension meter
     if (st.phase === 'reeling') {
-      c.fillStyle = 'rgba(20,33,61,.6)'; c.fillRect(W / 2 - 150, 24, 300, 46);
-      c.fillStyle = '#06d6a0'; c.fillRect(W / 2 - 146, 28, 292 * .75, 16); c.fillStyle = '#e63946'; c.fillRect(W / 2 - 146 + 292 * .75, 28, 292 * .25, 16);
-      c.fillStyle = '#fff'; c.fillRect(W / 2 - 148 + 292 * Math.min(1, st.tension), 24, 4, 24);
-      c.fillStyle = '#ffd166'; c.fillRect(W / 2 - 146, 50, 292 * st.progress, 14); c.fillStyle = '#fff'; c.font = '800 11px Nunito, sans-serif'; c.textAlign = 'center'; c.fillText('LINE TENSION  ·  REEL PROGRESS', W / 2, 61);
+      c.fillStyle = 'rgba(20,33,61,.6)'; c.fillRect(W / 2 - 150, 24, 300, 34);
+      c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(W / 2 - 146, 28, 292, 16);
+      c.fillStyle = '#ffd166'; c.fillRect(W / 2 - 146, 28, 292 * st.progress, 16); c.fillStyle = '#fff'; c.font = '800 11px Nunito, sans-serif'; c.textAlign = 'center'; c.fillText('REELING IN', W / 2, 54);
     }
     if (st.msg) { c.fillStyle = 'rgba(20,33,61,.75)'; const tw = c.measureText(st.msg).width; c.font = '700 20px Fraunces, Georgia, serif'; c.textAlign = 'center'; const w2 = c.measureText(st.msg).width + 40; c.fillRect(W / 2 - w2 / 2, H - 60, w2, 40); c.fillStyle = '#fff'; c.fillText(st.msg, W / 2, H - 32); }
   }

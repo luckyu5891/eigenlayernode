@@ -13,7 +13,6 @@ Edit locations: `assets/js/config.js` (church details), `assets/js/data.js` (fac
 | `courts.jpg` | Basketball courts card | Optional. A rendering or a photo of a similar court |
 | `parking.jpg` | Parking card | Optional |
 | `pond.jpg` | Detention ponds card | Optional. A photo of the site or a similar pond |
-| `site-plan.jpg` | Shown under Project story | The civil site plan image |
 | `logo.png` | Header mark | Square, transparent background if possible |
 | `st-alphonsa.jpg` | Reserved for a future saint page | Optional |
 
@@ -32,6 +31,9 @@ Filled from stalphonsaaustin.com in September 2026. Please confirm the items mar
 - [ ] Where the parish gathers during construction. The Manor church on Burleson Manor Rd has been sold, so the card currently points people to the parish website. Give us the current address or venue.
 - [ ] Direct giving link. The Support button currently opens the New Church Project page. Replace with a Zelle, PayPal, or pledge form link if you have one.
 - [x] Project story, in the parish's own words from the project page
+- [ ] A photo or sketch of the pedestrian steps and the wooden arch bridge, so the map version can match it.
+- [ ] Confirm the map placements made from the site walk discussion: additional parking on the south-east lawn, future construction zone in the north-west corner, septic field south of the loop. All three move in one line each in assets/js/iso-map.js.
+- [ ] Prize wording for the kids tour (config.js, prizeText). Current: Show this screen at the campus tour to claim your prize.
 - [ ] Dates for the timeline entries: General Body approval, land purchase, property blessing and Phase 1 groundbreaking, rectory blessing, Manor sale. Also what Phase 1 covers (church or CCD building first) and the target completion.
 
 ## 3. Facts to verify or fill (data.js, marked PLACEHOLDER)
@@ -54,8 +56,8 @@ Parking
 - [ ] Exact number of spaces and accessible spaces (site plan bays add up to roughly 110 to 120)
 - [ ] Gate hours, if the gate will be closed at times
 
-Detention ponds
-- [ ] Anything the engineer can add about capacity in gallons or acre-feet
+Detention pond
+- [ ] Depth stated as 3 to 4 ft and bridge length as 20 ft, from the site walk. Confirm.
 
 ## 4. Game content (optional but nice)
 
@@ -64,6 +66,10 @@ Detention ponds
 - [ ] Word Search words: add parish-specific words in ALL CAPS, 3 to 11 letters (data.js, `wordBank`)
 - [ ] Malayalam text: tell us which labels should be bilingual
 
-## 5. Certificate and rewards
+## 5. Event screens at the kids tour
+
+Open the site with `?event=1` on the end of the address (for example `https://your-site.replit.app/?event=1`) on the TVs or tablets at the venue. That hides the header and the sections below the map, enlarges the labels and buttons, and resets the passport for the next child after two minutes with no touches (change eventIdleSeconds in config.js).
+
+## 6. Certificate and rewards
 
 - [ ] The Passport certificate says to show it to a greeter for a small gift. Confirm this is wanted, or tell us new wording (common.js, `openPassport`).

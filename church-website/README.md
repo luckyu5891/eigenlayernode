@@ -10,7 +10,7 @@ No build step, no framework, no database. Plain HTML, CSS, and JavaScript. Progr
 | CCD Building | Arcade: Manna Catch, Word Search, Bible Trivia, Memory Match |
 | Basketball Courts | Hoops: flick to shoot, moving hoop, 60 seconds |
 | Parking | Park It: steer into the space, three levels |
-| Detention Ponds | Gone Fishing: cast, hook, reel, each catch unlocks a pond fact |
+| Detention Pond | Gone Fishing: tap to cast, hook, hold to reel, each catch unlocks a fact |
 
 ## Deploy on Replit
 
@@ -22,6 +22,10 @@ Option A, upload the zip (simplest):
 4. Press Run. Use Deploy, then Static, for a public link.
 
 Option B, import from GitHub: choose Import from GitHub and point it at this repository. The included `.replit` file runs `node serve.js` and configures static deployment.
+
+## Event mode for the kids tour
+
+Add `?event=1` to the address on a big screen or tablet: header and lower sections hide, labels and buttons grow, and progress resets after two minutes idle so each child starts fresh.
 
 ## Run locally
 

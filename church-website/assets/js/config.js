@@ -36,6 +36,10 @@ window.CHURCH = {
   donateUrl: 'https://www.stalphonsaaustin.com/new-church-project.html',   // VERIFY: replace with the direct giving link if one exists
   donateLabel: 'Support the New Church',
 
+  // Kids tour and passport rewards
+  prizeText: 'Show this screen at the campus tour to claim your prize.',
+  eventIdleSeconds: 120,          // event mode (open the site with ?event=1): reset for the next child after this much idle time
+
   // Project story, in the parish's own words from the New Church Project page.
   projectTitle: 'Our New Church Project',
   projectStory: 'The construction of our new church is a long-cherished dream of our families. It is about building a spiritual home where generations can encounter Christ, celebrate their faith, and carry forward our rich Syro-Malabar liturgical heritage. Our parish belongs to the St. Thomas Syro-Malabar Catholic Diocese of Chicago.',
@@ -56,7 +60,6 @@ window.CHURCH = {
     courts: 'assets/img/courts.jpg',
     parking: 'assets/img/parking.jpg',
     pond: 'assets/img/pond.jpg',
-    sitePlan: 'assets/img/site-plan.jpg',
     saint: 'assets/img/st-alphonsa.jpg'
   }
 };

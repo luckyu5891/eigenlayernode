@@ -8,6 +8,7 @@
   const C = window.CHURCH, D = window.DATA;
 
   document.addEventListener('DOMContentLoaded', () => {
+    initEventMode();
     fillChurchFields(); renderLegend(); renderVisit(); renderProject(); renderFooter();
     IsoMap.build($('#iso-map'));
     Panel.init(); Overlay.init();
@@ -32,6 +33,19 @@
   });
 
   function openItem(id) { interacted(); Sfx.play('tap'); Panel.open(id); IsoMap.select(id, Panel.region()); scrollToStage(); }
+
+  /* ---------- Event mode (?event=1): big screens at the kids tour ---------- */
+  function initEventMode() {
+    if (!new URLSearchParams(location.search).has('event')) return;
+    document.body.classList.add('event');
+    let idle = null;
+    const resetForNext = () => {
+      Overlay.close(); closeItem(); Modal.close(); Passport.reset(); Hunt.reset(); renderHunt(); IsoMap.resetView();
+      touched = false; $('#stage-hint').classList.remove('hide'); $('#stage-intro').classList.remove('hide');
+    };
+    const arm = () => { clearTimeout(idle); idle = setTimeout(resetForNext, (C.eventIdleSeconds || 120) * 1000); };
+    ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, arm, { passive: true })); arm();
+  }
 
   /* ---------- Discoverability: tap cue, periodic nudge, floating header ---------- */
   let touched = false, nudgeTimer = null;
@@ -104,7 +118,6 @@
     if (C.donateUrl) row.append(el('a', { class: 'btn gold', href: C.donateUrl, target: '_blank', rel: 'noopener', text: C.donateLabel }));
     else row.append(el('span', { class: 'placeholder-note', text: 'Add donateUrl in config.js to show the Support button.' }));
     if (C.projectUrl && C.projectUrl !== C.donateUrl) row.append(el('a', { class: 'btn secondary', href: C.projectUrl, target: '_blank', rel: 'noopener', text: 'Project page' }));
-    if (C.images.sitePlan) { const img = el('img', { src: C.images.sitePlan, alt: 'Site plan', style: 'width:100%;border-radius:12px;margin-top:14px', onerror: e => e.target.remove() }); row.parentNode.append(img); }
   }
   function renderFooter() {
     const links = [];

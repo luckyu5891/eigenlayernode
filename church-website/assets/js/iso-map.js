@@ -38,8 +38,14 @@ window.IsoMap = (function () {
     { x0: 395, y0: 202, x1: 417, y1: 255, dir: 'x', ada: [] }
   ];
   const COURTS = [{ x0: 10, y0: 178, x1: 70, y1: 208 }, { x0: 78, y0: 178, x1: 138, y1: 208 }];
-  const PONDS = [{ ta: 0.08, tb: 0.40 }, { ta: 0.55, tb: 0.87 }];                  // equal lenses either side of the entry
-  const POND_INSET = 30, POND_HW = 17;
+  // One continuous, mostly dry detention basin along the whole frontage (3 to 4 ft deep).
+  const BASIN = { ta: 0.03, tb: 0.97, inset: 28, hw: 9 };
+  const PED = { t: 0.36 };                                                            // walkers: five steps, a landing, a 20 ft arch bridge
+  const EXTRA_PARKING = { x0: 430, y0: 262, x1: 505, y1: 318 };                      // additional parking on the south-east lawn (placement to confirm)
+  const FUTURE = [[30, 24], [150, 24], [150, 98], [30, 98]];                           // reserved for future construction (placement to confirm)
+  const SEPTIC = [[218, 304], [300, 304], [300, 352], [218, 352]];                     // septic field, left as plain green
+  const fx = y => 420 + RD[0] * (y / RD[1]);                                          // frontage x at a given y
+  const basinX = (y, k) => fx(y - n[1] * k) + n[0] * k;                               // x of the point k ft into the site that sits at this y
   const GRAVEL = [[150, 222], [36, 222], [36, 366], [200, 366], [200, 295]];
 
   /* ---------------- helpers ---------------- */
@@ -116,11 +122,11 @@ window.IsoMap = (function () {
     ['terrain', 'ground', 'objects', 'tags', 'fx', 'dim', 'lift'].forEach(k => layers[k] = S('g', { id: 'L-' + k }, world));
     itemParts = { church: [], ccd: [], courts: [], parking: [], pond: [] };
 
-    drawTerrain(); drawRoad(); drawLawn(); drawDrive(); drawParking(); drawGravel(); drawCourts(); drawPonds(); drawWalks();
+    drawTerrain(); drawRoad(); drawLawn(); drawBasin(); drawDrive(); drawParking(); drawExtraParking(); drawGravel(); drawCourts(); drawZones(); drawWalks();
     const objs = [];
     objs.push({ depth: depthOf(CHURCH), node: drawChurch() });
     objs.push({ depth: depthOf(CCD), node: drawCcd() });
-    drawCourtsObjects(objs); drawParkedCars(objs); drawGate(objs); drawPoles(objs); drawDumpster(objs); drawTrees(objs); drawPondObjects(objs);
+    drawCourtsObjects(objs); drawParkedCars(objs); drawGate(objs); drawPoles(objs); drawDumpster(objs); drawTrees(objs); drawPondObjects(objs); drawPedestrian(objs); drawLamps(objs);
     objs.sort((a, b) => a.depth - b.depth).forEach((o, i) => { o.node.classList.add('intro'); o.node.style.animationDelay = (0.15 + i * 0.012).toFixed(3) + 's'; layers.objects.append(o.node); });
     drawRoadCars(); drawLoopCar(); drawPeople(); drawTags();
 
@@ -186,6 +192,8 @@ window.IsoMap = (function () {
     // flared apron at the road
     poly(g, [[e0 - 14, ENTRY.y0 - 8], [e0 + 2, ENTRY.y0 - 8], [e0, ENTRY.y0], [e0 - 14, ENTRY.y0]], { fill: '#4b4f57' });
     poly(g, [[e1 - 14, ENTRY.y1], [e1, ENTRY.y1], [e1 + 2, ENTRY.y1 + 8], [e1 - 14, ENTRY.y1 + 8]], { fill: '#4b4f57' });
+    // concrete headwalls where the drive crosses the green basin
+    [[ENTRY.y0 - 2, ENTRY.y0], [ENTRY.y1, ENTRY.y1 + 2]].forEach(([ya, yb]) => poly(g, [[basinX(ya, BASIN.inset + BASIN.hw + 2), ya], [basinX(ya, BASIN.inset - BASIN.hw - 2), ya], [basinX(yb, BASIN.inset - BASIN.hw - 2), yb], [basinX(yb, BASIN.inset + BASIN.hw + 2), yb]], { fill: '#c9c4b8' }));
     // one-way arrows on the loop
     [[LOOP.x0 + 12, 180, 'S'], [282, LOOP.y1 - 12, 'E'], [LOOP.x1 - 12, 120, 'N'], [LOOP.x1 - 12, 240, 'N'], [282, LOOP.y0 + 12, 'W']].forEach(([x, y, dir]) => {
       const dx = dir === 'E' ? 6 : dir === 'W' ? -6 : 0, dy = dir === 'S' ? 6 : dir === 'N' ? -6 : 0;
@@ -231,26 +239,45 @@ window.IsoMap = (function () {
       });
     });
   }
-  function pondShape(pd, inset, hw, grow) {
-    const N = 18, near = [], farr = [];
-    for (let i = 0; i <= N; i++) { const u = i / N, t = pd.ta + (pd.tb - pd.ta) * u, w = hw * Math.sqrt(Math.sin(Math.PI * u) + 0.02) + (grow || 0); near.push(off(r(t), inset - w)); farr.push(off(r(t), inset + w)); }
+  function basinShape(grow) {
+    const N = 44, near = [], farr = [];
+    for (let i = 0; i <= N; i++) { const u = i / N, t = BASIN.ta + (BASIN.tb - BASIN.ta) * u; const taper = Math.min(1, Math.min(u, 1 - u) * 14 + 0.12); const w = (BASIN.hw + (grow || 0)) * taper; near.push(off(r(t), BASIN.inset - w)); farr.push(off(r(t), BASIN.inset + w)); }
     return near.concat(farr.reverse());
   }
-  function drawPonds() {
+  function drawBasin() {
     const g = S('g', { 'data-item': 'pond', class: 'item' }, layers.ground); itemParts.pond.push(g);
-    PONDS.forEach(pd => {
-      poly(g, pondShape(pd, POND_INSET, POND_HW, 5), { fill: '#86b25a' });          // grassy bank
-      poly(g, pondShape(pd, POND_INSET, POND_HW, 0), { fill: '#b98a4a', opacity: .9 });   // mud rim
-      poly(g, pondShape(pd, POND_INSET, POND_HW, -2.5), { fill: 'url(#water)' });
-    });
-    // spillway markers toward the road
-    [0.2, 0.7].forEach(t => poly(g, [off(r(t), 9), off(r(t + 0.05), 9), off(r(t + 0.05), 14), off(r(t), 14)], { fill: '#d9cdb4' }));
+    poly(g, basinShape(5), { fill: '#86b25a' });
+    poly(g, basinShape(1.5), { fill: '#6da04e' });
+    poly(g, basinShape(-2), { fill: '#5c9144' });
+    [3, -1].forEach(k => S('polygon', { points: pts(basinShape(k)), fill: 'none', stroke: '#ffffff', 'stroke-width': .6, opacity: .25 }, g));
+    // a seasonal puddle at the low spot south of the drive
+    const pud = []; for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; pud.push(off(r(0.63 + Math.cos(a) * 0.055), BASIN.inset + Math.sin(a) * 4.5)); }
+    poly(g, pud, { fill: 'url(#water)', opacity: .9 });
+  }
+  function drawExtraParking() {
+    const g = S('g', { 'data-item': 'parking', class: 'item' }, layers.ground); itemParts.parking.push(g);
+    const L = EXTRA_PARKING;
+    poly(g, [[382, 262], [L.x0, 262], [L.x0, 278], [382, 278]], { fill: '#4b4f57' });
+    poly(g, [[L.x0, L.y0], [L.x1, L.y0], [L.x1, L.y1], [L.x0, L.y1]], { fill: '#4b4f57' });
+    for (let x = L.x0; x <= L.x1; x += 9) { line(g, [x, L.y0, 0], [x, L.y0 + 18, 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 }); line(g, [x, L.y1 - 18, 0], [x, L.y1, 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 }); }
+    const c = P((L.x0 + L.x1) / 2, (L.y0 + L.y1) / 2, 0); S('text', { x: c[0], y: c[1] + 2.5, 'text-anchor': 'middle', 'font-size': 6.5, 'font-weight': 800, fill: '#ffffff', opacity: .8, 'letter-spacing': .5 }, g).textContent = 'ADDITIONAL PARKING';
+  }
+  function drawZones() {
+    const g = layers.ground;
+    poly(g, FUTURE, { fill: '#a9d98a', opacity: .55 });
+    S('polygon', { points: pts(FUTURE), fill: 'none', stroke: '#ffffff', 'stroke-width': 1.2, 'stroke-dasharray': '5 4', opacity: .7 }, g);
+    const c = P(90, 61, 0); S('text', { x: c[0], y: c[1] + 3, 'text-anchor': 'middle', 'font-size': 8, 'font-weight': 800, fill: '#2f5d50', opacity: .8, 'letter-spacing': 1 }, g).textContent = 'FUTURE';
+    poly(g, SEPTIC, { fill: '#b5de95', opacity: .5 });
+    S('polygon', { points: pts(SEPTIC), fill: 'none', stroke: '#ffffff', 'stroke-width': .9, 'stroke-dasharray': '3 4', opacity: .5 }, g);
   }
   function drawWalks() {
     const g = layers.ground;
     const gp = S('g', { 'data-item': 'church', class: 'item' }, g); itemParts.church.push(gp);
     poly(gp, [[CHURCH.x1, 158], [LOOP.x1 - LOOP.w, 158], [LOOP.x1 - LOOP.w, 202], [CHURCH.x1, 202]], { fill: 'url(#hatch)' });   // entry plaza on the axis
     poly(gp, [[270, LOOP.y0 + LOOP.w], [286, LOOP.y0 + LOOP.w], [286, CHURCH.y0], [270, CHURCH.y0]], { fill: '#e9e2d3' });
+    const E = off(r(PED.t), 44);
+    S('polyline', { points: pts([E, [E[0], 163], [LOOP.x1, 163]]), fill: 'none', stroke: '#e9e2d3', 'stroke-width': 6, 'stroke-linejoin': 'round' }, g);
+    for (let x = LOOP.x1 - LOOP.w + 2; x < LOOP.x1 - 2; x += 5) poly(g, [[x, 160], [x + 2.5, 160], [x + 2.5, 166], [x, 166]], { fill: '#f4f4f4', opacity: .9 });
     const gc = S('g', { 'data-item': 'ccd', class: 'item' }, g); itemParts.ccd.push(gc);
     poly(gc, [[CCD.x1, 280], [BAYS[2].x0, 280], [BAYS[2].x0, 300], [CCD.x1, 300]], { fill: '#e9e2d3' });                            // walk to the west bay
     poly(gc, [[CCD.x1, CCD.y0 - 3], [CCD.x1 + 14, CCD.y0 - 3], [CCD.x1 + 14, CCD.y1 + 3], [CCD.x1, CCD.y1 + 3]], { fill: '#e9e2d3' }); // east apron
@@ -399,23 +426,51 @@ window.IsoMap = (function () {
       [20, 378, 24, 11, '#57a34a'], [110, 379, 26, 12, '#2f7a44'], [240, 372, 22, 10, '#4c9c45'], [300, 375, 27, 12, '#3f8f3f'], [360, 372, 24, 11, '#57a34a'], [420, 372, 22, 10, '#3f8f3f'], [480, 374, 24, 11, '#2f7a44'],
       [40, -12, 26, 12, '#2f7a44'], [120, -14, 22, 10, '#57a34a'], [200, -12, 26, 12, '#3f8f3f'], [280, -14, 22, 10, '#4c9c45'], [360, -12, 24, 11, '#2f7a44'],
       [200, 127, 14, 6, '#6fbf5a'], [200, 233, 14, 6, '#6fbf5a'], [363, 127, 14, 6, '#6fbf5a'], [363, 233, 14, 6, '#6fbf5a'],
-      [160, 300, 20, 9, '#4c9c45'], [160, 340, 18, 8, '#2f7a44'], [20, 150, 20, 9, '#3f8f3f'], [100, 140, 22, 10, '#57a34a'], [60, 100, 24, 11, '#4c9c45'], [130, 80, 20, 9, '#2f7a44'],
-      [400, 50, 20, 9, '#57a34a'], [150, 40, 22, 10, '#3f8f3f'], [60, 40, 20, 9, '#2f7a44'],
-      [445, 205, 18, 8, '#57a34a'], [430, 245, 20, 9, '#3f8f3f'], [470, 300, 22, 10, '#4c9c45'], [500, 350, 20, 9, '#2f7a44'], [440, 330, 18, 8, '#57a34a'], [420, 315, 16, 7, '#6fbf5a']
+      [160, 300, 20, 9, '#4c9c45'], [160, 340, 18, 8, '#2f7a44'], [20, 150, 20, 9, '#3f8f3f'], [100, 140, 22, 10, '#57a34a'], [60, 100, 24, 11, '#4c9c45'],
+      [400, 50, 20, 9, '#57a34a'],
+      [445, 205, 18, 8, '#57a34a'], [430, 245, 20, 9, '#3f8f3f'], [500, 350, 20, 9, '#2f7a44']
     ];
     for (let t = -0.9; t <= 1.9; t += 0.16) { const p = off(r(t), -78); list.push([p[0], p[1], 26, 12, ['#3f8f3f', '#2f7a44', '#57a34a'][Math.abs(Math.round(t * 10)) % 3]]); }
     list.forEach(([x, y, h, rad, col]) => objs.push({ depth: y - x, node: tree(null, x, y, h, rad, col) }));
   }
   function drawPondObjects(objs) {
     const g = S('g', { 'data-item': 'pond', class: 'item' }, null); itemParts.pond.push(g);
-    [[0.18, 30], [0.3, 27], [0.64, 33], [0.78, 29]].forEach(([t, k], i) => {
-      const c = P(...off(r(t), k), 0);
-      S('ellipse', { class: 'ripple', cx: c[0], cy: c[1], rx: 9, ry: 4, fill: 'none', stroke: '#fff', 'stroke-width': 1, style: `animation-delay:${-i * 0.8}s` }, g);
-    });
-    [0.1, 0.14, 0.36, 0.58, 0.62, 0.84].forEach(t => { const p = off(r(t), 46); for (let k = 0; k < 3; k++) line(g, [p[0] + k * 1.5, p[1] - k, 0], [p[0] + k * 1.5 + .6, p[1] - k, 6 + (k % 2) * 2], { stroke: '#3f8a3f', 'stroke-width': .9, 'stroke-linecap': 'round' }); });
-    const dk = P(...off(r(0.24), 31), 0); S('ellipse', { cx: dk[0], cy: dk[1], rx: 2.4, ry: 1.3, fill: '#fff' }, g); S('circle', { cx: dk[0] + 2, cy: dk[1] - 1.4, r: 1.1, fill: '#fff' }, g);
-    const dk2 = P(...off(r(0.72), 32), 0); S('ellipse', { cx: dk2[0], cy: dk2[1], rx: 2.2, ry: 1.2, fill: '#f7dfa0' }, g); S('circle', { cx: dk2[0] - 2, cy: dk2[1] - 1.3, r: 1, fill: '#f7dfa0' }, g);
-    const c = off(r(0.3), 30); objs.push({ depth: c[1] - c[0] + 40, node: g });
+    const c0 = P(...off(r(0.63), BASIN.inset), 0);
+    S('ellipse', { class: 'ripple', cx: c0[0], cy: c0[1], rx: 7, ry: 3, fill: 'none', stroke: '#fff', 'stroke-width': 1 }, g);
+    [0.1, 0.2, 0.3, 0.38, 0.58, 0.7, 0.8, 0.9].forEach((t, i) => { const p = off(r(t), BASIN.inset + (i % 2 ? 6 : -6)); for (let k = 0; k < 3; k++) line(g, [p[0] + k * 1.5, p[1] - k, 0], [p[0] + k * 1.5 + .6, p[1] - k, 5 + (k % 2) * 2], { stroke: '#3f8a3f', 'stroke-width': .9, 'stroke-linecap': 'round' }); });
+    const dk = P(...off(r(0.65), BASIN.inset + 1), 0); S('ellipse', { cx: dk[0], cy: dk[1], rx: 2.4, ry: 1.3, fill: '#fff' }, g); S('circle', { cx: dk[0] + 2, cy: dk[1] - 1.4, r: 1.1, fill: '#fff' }, g);
+    const c = off(r(0.5), BASIN.inset); objs.push({ depth: c[1] - c[0] + 40, node: g });
+  }
+  // Walkers' entrance: five steps up from the road, a landing, a 20 ft arched wooden bridge over the basin, steps down to the lawn.
+  function drawPedestrian(objs) {
+    const g = S('g', { 'data-item': 'pond', class: 'item' }, null); itemParts.pond.push(g);
+    const base = r(PED.t), W2 = 3.2;
+    const at = (k, s, z) => { const p = along(off(base, k), s); return [p[0], p[1], z]; };
+    const tread = (k0, k1, z0, z1, col) => poly(g, [at(k0, -W2, z0), at(k0, W2, z0), at(k1, W2, z1), at(k1, -W2, z1)], { fill: col });
+    const side = (k0, k1, z0, z1, zb, col) => poly(g, [at(k0, W2, zb), at(k1, W2, zb), at(k1, W2, z1), at(k0, W2, z0)], { fill: col });
+    for (let i = 0; i < 5; i++) { const k0 = -1 + i * 2.2, z = (i + 1) * 0.7; side(k0, k0 + 2.2, z, z, 0, '#a8a296'); tread(k0, k0 + 2.2, z, z, '#dcd7cc'); }
+    side(10, 18, 3.5, 3.5, 0, '#a8a296'); tread(10, 18, 3.5, 3.5, '#e6e1d7');
+    const N = 10, zs = []; for (let i = 0; i <= N; i++) zs.push(3.5 + Math.sin(i / N * Math.PI) * 2.6);
+    for (let i = 0; i < N; i++) { const k0 = 18 + i * 2; side(k0, k0 + 2, zs[i] - 1.2, zs[i + 1] - 1.2, Math.min(zs[i], zs[i + 1]) - 2.2, '#7a5a40'); }
+    for (let i = 0; i < N; i++) { const k0 = 18 + i * 2; tread(k0, k0 + 2, zs[i], zs[i + 1], i % 2 ? '#a0785a' : '#b08862'); }
+    [-W2, W2].forEach(sd => { const top = []; for (let i = 0; i <= N; i++) { const k = 18 + i * 2; line(g, at(k, sd, zs[i]), at(k, sd, zs[i] + 3), { stroke: '#5b4634', 'stroke-width': .8 }); top.push(at(k, sd, zs[i] + 3)); } S('polyline', { points: pts(top), fill: 'none', stroke: '#6b4f36', 'stroke-width': 1.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g); });
+    [[38, 40, 2.3], [40, 42, 1.1]].forEach(([k0, k1, z]) => { side(k0, k1, z, z, 0, '#a8a296'); tread(k0, k1, z, z, '#dcd7cc'); });
+    const mid = off(base, 28); objs.push({ depth: mid[1] - mid[0] + 6, node: g });
+  }
+  function lamp(x, y) {
+    const g = S('g', { class: 'lamp' }); const [sx, sy] = P(x, y, 0);
+    S('ellipse', { cx: sx, cy: sy, rx: 2, ry: 1, fill: '#0b1530', opacity: .25 }, g);
+    line(g, [x, y, 0], [x, y, 7], { stroke: '#2b2a28', 'stroke-width': 1.1 });
+    const t = P(x, y, 7);
+    S('ellipse', { class: 'lamp-glow', cx: t[0], cy: t[1] - 1, rx: 6, ry: 3.2, fill: '#ffe08a', opacity: .22 }, g);
+    S('polygon', { points: `${t[0]},${t[1] - 4} ${t[0] + 2.2},${t[1] - 1.5} ${t[0] + 1.6},${t[1] + 1.5} ${t[0] - 1.6},${t[1] + 1.5} ${t[0] - 2.2},${t[1] - 1.5}`, fill: '#ffd166', stroke: '#2b2a28', 'stroke-width': .6 }, g);
+    S('circle', { cx: t[0], cy: t[1] - 4.6, r: .9, fill: '#2b2a28' }, g);
+    return g;
+  }
+  function drawLamps(objs) {
+    const base = r(PED.t);
+    const spots = [along(off(base, 12), -5.5), along(off(base, 12), 5.5), along(off(base, 40), -5.5), along(off(base, 40), 5.5), [432, 158], [410, 158], [376, 155], [376, 206]];
+    spots.forEach(([x, y]) => objs.push({ depth: y - x + 2, node: lamp(x, y) }));
   }
   function drawRoadCars() {
     const g = layers.objects;
@@ -464,20 +519,21 @@ window.IsoMap = (function () {
     ccd: () => P(93, 246, CCD.h + CCD.rh + 30),
     courts: () => P(28, 193, 34),
     parking: () => P(284, 281, 24),
-    pond: () => { const c = off(r(0.24), 30); return P(c[0], c[1], 32); }
+    pond: () => { const c = off(r(0.2), BASIN.inset); return P(c[0], c[1], 30); }
   };
   function drawTags() {
     window.DATA.items.forEach((it, i) => {
       const [sx, sy] = TAG_AT[it.id]();
-      const w = it.name.length * 8.2 + 40;
+      const K = document.body.classList.contains('event') ? 1.4 : 1;
+      const w = (it.name.length * 8.2 + 40) * K;
       const g = S('g', { class: 'tag item intro-tag', 'data-item': it.id, tabindex: 0, role: 'button', 'aria-label': it.name + '. ' + it.kind, style: `animation-delay:${(1.1 + i * 0.12).toFixed(2)}s` }, layers.tags);
-      S('circle', { class: 'tap-ring', cx: sx, cy: sy + 27, r: 6, fill: 'none', stroke: '#ffd166', 'stroke-width': 2 }, g);
-      S('circle', { class: 'tap-ring r2', cx: sx, cy: sy + 27, r: 6, fill: 'none', stroke: '#ffd166', 'stroke-width': 2 }, g);
+      S('circle', { class: 'tap-ring', cx: sx, cy: sy + 27, r: 6 * K, fill: 'none', stroke: '#ffd166', 'stroke-width': 2 }, g);
+      S('circle', { class: 'tap-ring r2', cx: sx, cy: sy + 27, r: 6 * K, fill: 'none', stroke: '#ffd166', 'stroke-width': 2 }, g);
       S('line', { x1: sx, y1: sy + 12, x2: sx, y2: sy + 26, stroke: '#fff', 'stroke-width': 1.5, opacity: .8 }, g);
-      S('circle', { cx: sx, cy: sy + 27, r: 2.8, fill: '#ffd166', stroke: '#fff', 'stroke-width': 1 }, g);
-      S('rect', { x: sx - w / 2, y: sy - 12, width: w, height: 26, rx: 13 }, g);
-      S('text', { x: sx - w / 2 + 10, y: sy + 6, 'font-size': 14 }, g).textContent = it.icon;
-      S('text', { x: sx - w / 2 + 30, y: sy + 5.5 }, g).textContent = it.name;
+      S('circle', { cx: sx, cy: sy + 27, r: 2.8 * K, fill: '#ffd166', stroke: '#fff', 'stroke-width': 1 }, g);
+      S('rect', { x: sx - w / 2, y: sy + 12 - 26 * K, width: w, height: 26 * K, rx: 13 * K }, g);
+      S('text', { x: sx - w / 2 + 10 * K, y: sy + 6 - (K - 1) * 4, 'font-size': 14 * K }, g).textContent = it.icon;
+      S('text', { x: sx - w / 2 + 30 * K, y: sy + 5.5 - (K - 1) * 4 }, g).textContent = it.name;
       g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); api.onTap && api.onTap(it.id); } });
     });
   }

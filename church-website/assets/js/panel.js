@@ -45,9 +45,11 @@ window.Games = window.Games || {};
           <div><div class="t">${esc(it.gameName)}</div><div class="b">${esc(it.gameBlurb)}</div></div>
           <button class="btn gold" type="button" id="play-btn">${stamped ? 'Play again' : 'Play'}</button>
         </div>
-        ${stamped ? '<div class="stamped-note">★ Stamped in your Passport</div>' : '<div class="stamped-note muted" style="color:var(--ink-soft)">Finish the game to earn this stamp</div>'}`;
+        ${stamped ? '<div class="stamped-note">★ Stamped in your Passport</div>' : '<div class="stamped-note muted" style="color:var(--ink-soft)">Finish the game to earn this stamp</div>'}
+        <div class="btn-row" style="margin-top:14px"><button class="btn secondary block" type="button" id="panel-back">← Back to map</button></div>`;
       this.body.scrollTop = 0;
       $('#play-btn').addEventListener('click', () => { Sfx.play('tap'); Overlay.open(it.game, id); });
+      $('#panel-back').addEventListener('click', () => { Sfx.play('tap'); this.close(); if (this.onClose) this.onClose(); });
       this.node.hidden = false; requestAnimationFrame(() => this.node.classList.add('open'));
     },
     close() { if (!this.node) return; this.node.classList.remove('open'); this.current = null; const n = this.node; setTimeout(() => { if (!n.classList.contains('open')) n.hidden = true; }, 450); },
@@ -72,6 +74,7 @@ window.Games = window.Games || {};
       this.node.hidden = false; document.body.style.overflow = 'hidden';
       this.active = g;
       g.mount(host, { itemId, item: it, close: () => this.close(), stamp: label => Passport.stamp(itemId, label), startHunt: () => { this.close(); if (this.onStartHunt) this.onStartHunt(); } });
+      this.body.append(el('div', { class: 'o-foot' }, [el('button', { class: 'btn secondary block', type: 'button', text: '← Back to map', onclick: () => this.close() })]));
       history.pushState({ overlay: gameKey }, '');
     },
     close() {

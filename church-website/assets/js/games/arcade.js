@@ -14,13 +14,15 @@
           <button class="tab" role="tab" aria-selected="false" data-tab="words">🔤 Word Search</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="trivia">❓ Trivia</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="memory">🐘 Memory</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="color">🎨 Coloring</button>
         </div>
         <section class="tab-panel" data-panel="manna"></section>
         <section class="tab-panel" data-panel="words" hidden></section>
         <section class="tab-panel" data-panel="trivia" hidden></section>
-        <section class="tab-panel" data-panel="memory" hidden></section>`;
+        <section class="tab-panel" data-panel="memory" hidden></section>
+        <section class="tab-panel" data-panel="color" hidden></section>`;
       $$('.tab', host).forEach(t => t.addEventListener('click', () => { $$('.tab', host).forEach(x => x.setAttribute('aria-selected', x === t ? 'true' : 'false')); $$('.tab-panel', host).forEach(p => p.hidden = p.dataset.panel !== t.dataset.tab); if (t.dataset.tab !== 'manna') Manna.stop(); Sfx.play('tap'); }));
-      Manna.init($('[data-panel="manna"]', host)); Words.init($('[data-panel="words"]', host)); Trivia.init($('[data-panel="trivia"]', host)); Memory.init($('[data-panel="memory"]', host));
+      Manna.init($('[data-panel="manna"]', host)); Words.init($('[data-panel="words"]', host)); Trivia.init($('[data-panel="trivia"]', host)); Memory.init($('[data-panel="memory"]', host)); Coloring.init($('[data-panel="color"]', host));
     },
     unmount() { Manna.stop(); timers.forEach(clearInterval); timers = []; }
   };
@@ -152,5 +154,47 @@
       else { this.lock = true; setTimeout(() => { a.classList.remove('flipped'); b.classList.remove('flipped'); this.open = []; this.lock = false; }, 800); }
     },
     finish() { Sfx.play('win'); if (Passport.best('Memory Match (fewest moves)', this.moves, true)) { $('#mm-best', this.p).textContent = this.moves; Toast.show('New best: ' + this.moves + ' moves.', 'gold'); } else Toast.show('Every animal is aboard in ' + this.moves + ' moves.'); stamp("Won Noah's Ark Memory Match"); }
+  };
+
+  /* ================= COLORING (little kids) ================= */
+  const Coloring = {
+    palette: ['#e63946', '#f4a261', '#ffd166', '#06d6a0', '#118ab2', '#8338ec', '#ff70a6', '#8d5524', '#2b2a28', '#ffffff'],
+    svg: `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <rect data-fill x="0" y="0" width="400" height="212" fill="#fff"/>
+      <circle data-fill cx="340" cy="56" r="26" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <rect data-fill x="0" y="212" width="400" height="88" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <path data-fill d="M30 212 Q35 180 60 190 Q85 175 95 212 Z" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <rect data-fill x="58" y="200" width="8" height="14" fill="#fff" stroke="#2b2a28" stroke-width="2"/>
+      <path data-fill d="M305 212 Q310 178 335 188 Q360 174 370 212 Z" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <rect data-fill x="333" y="200" width="8" height="14" fill="#fff" stroke="#2b2a28" stroke-width="2"/>
+      <rect data-fill x="110" y="130" width="180" height="82" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <polygon data-fill points="100,130 200,62 300,130" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <rect data-fill x="196" y="22" width="8" height="40" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <rect data-fill x="184" y="32" width="32" height="8" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <circle data-fill cx="200" cy="106" r="14" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <path data-fill d="M182 212 V162 A18 18 0 0 1 218 162 V212 Z" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <path data-fill d="M130 200 V160 A10 10 0 0 1 150 160 V200 Z" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <path data-fill d="M250 200 V160 A10 10 0 0 1 270 160 V200 Z" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+      <polygon data-fill points="175,212 225,212 260,300 140,300" fill="#fff" stroke="#2b2a28" stroke-width="3"/>
+    </svg>`,
+    init(p) {
+      this.p = p; this.color = this.palette[0];
+      p.innerHTML = `<div class="g-top"><p>Pick a colour, then tap a part of the church to paint it. Colour five parts and press Finished for the stamp.</p></div>
+        <div class="palette" id="cb-palette" aria-label="Colours"></div>
+        <div class="coloring-stage" id="cb-stage"></div>
+        <div class="btn-row" style="margin-top:12px"><button class="btn" type="button" id="cb-finish">Finished</button><button class="btn secondary" type="button" id="cb-reset">Start over</button><button class="btn secondary" type="button" id="cb-save">Save picture</button><span class="g-msg" id="cb-msg" style="margin:0"></span></div>`;
+      const pal = $('#cb-palette', p);
+      this.palette.forEach((col, i) => pal.append(el('button', { class: 'swatch', type: 'button', style: `background:${col}`, 'aria-label': 'Colour ' + (i + 1), 'aria-pressed': i === 0 ? 'true' : 'false', onclick: e => { this.color = col; $$('.swatch', p).forEach(sw => sw.setAttribute('aria-pressed', 'false')); e.currentTarget.setAttribute('aria-pressed', 'true'); Sfx.play('tap'); } })));
+      $('#cb-reset', p).addEventListener('click', () => this.load()); $('#cb-finish', p).addEventListener('click', () => this.finish()); $('#cb-save', p).addEventListener('click', () => this.save());
+      this.load();
+    },
+    load() { const st = $('#cb-stage', this.p); st.innerHTML = this.svg; $('#cb-msg', this.p).textContent = ''; st.querySelectorAll('[data-fill]').forEach(n => n.addEventListener('click', () => { n.setAttribute('fill', this.color); Sfx.play('tap'); })); },
+    filled() { return $$('#cb-stage [data-fill]', this.p).filter(n => n.getAttribute('fill') !== '#fff').length; },
+    finish() { const n = this.filled(); if (n < 5) { $('#cb-msg', this.p).textContent = `Colour ${5 - n} more part${5 - n === 1 ? '' : 's'} first.`; Sfx.play('bad'); return; } $('#cb-msg', this.p).textContent = 'What a masterpiece!'; Sfx.play('win'); stamp('Coloured the church'); },
+    save() {
+      const svg = $('#cb-stage svg', this.p); const xml = new XMLSerializer().serializeToString(svg); const img = new Image(); const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }));
+      img.onload = () => { const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 900; const c = cv.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, 1200, 900); c.drawImage(img, 0, 0, 1200, 900); URL.revokeObjectURL(url); const a = document.createElement('a'); a.download = 'my-church.png'; a.href = cv.toDataURL('image/png'); a.click(); Toast.show('Picture saved.'); };
+      img.src = url;
+    }
   };
 })();

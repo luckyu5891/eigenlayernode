@@ -37,7 +37,7 @@
       p.stamps[id] = { at: Date.now(), label: label || '' }; safeSet(STORE_KEY, p);
       document.dispatchEvent(new CustomEvent('passport:change'));
       Toast.show(`Passport stamped: ${item(id).name}`, 'gold'); Sfx.play('stamp');
-      if (this.count() === D.items.length) setTimeout(() => Toast.show('All five stamps! Open your Passport for the certificate.', 'gold', 5000), 1400);
+      if (this.count() === D.items.length) setTimeout(() => Toast.show('All five stamps! Open your Passport for your certificate and prize.', 'gold', 5000), 1400);
       return true;
     },
     best(key, value, lowerIsBetter) {
@@ -133,7 +133,8 @@
         <nav class="nav" aria-label="Main">
           <a href="#places">Explore</a>
           <a href="#visit">Visit</a>
-          ${C.donateUrl ? `<a href="${esc(C.donateUrl)}" target="_blank" rel="noopener" class="donate">${esc(C.donateLabel)}</a>` : ''}
+          <a href="#project">Project</a>
+          ${C.donateUrl ? `<a href="${esc(C.donateUrl)}" target="_blank" rel="noopener" class="donate"><span class="full">${esc(C.donateLabel)}</span><span class="short">Support</span></a>` : ''}
           <button type="button" id="passport-btn">Passport <span class="pill-count" id="passport-count">0/5</span></button>
           <button type="button" id="sound-btn" aria-label="Toggle sound" title="Toggle sound">${Sfx.enabled() ? '🔊' : '🔇'}</button>
         </nav>
@@ -155,7 +156,7 @@
       <p class="muted">Finish the game in each of the five places to earn its stamp. Saved on this device.</p>
       <div class="passport-grid">${stamps}</div>
       <div class="progress"><span style="width:${Passport.count() / D.items.length * 100}%"></span></div>
-      ${all ? `<div class="card sand" style="margin-top:16px"><h3>Certificate of Exploration</h3><p>You have explored every corner of the new ${esc(C.shortName)} campus. Show this screen to a greeter after Holy Qurbana to claim a small gift.</p><p class="verse">Well done, good and faithful servant.<br><span class="verse-ref">Matthew 25:23</span></p></div>` : ''}
+      ${all ? `<div class="card sand" style="margin-top:16px"><h3>Certificate of Exploration</h3><p>You have explored every corner of the new ${esc(C.shortName)} campus. ${esc(C.prizeText || '')}</p><p class="verse">Well done, good and faithful servant.<br><span class="verse-ref">Matthew 25:23</span></p></div>` : ''}
       ${scores ? `<div class="divider"></div><h3>Best scores</h3><ul class="scores">${scores}</ul>` : ''}
       <div class="btn-row" style="margin-top:16px"><button class="btn ghost sm" type="button" id="passport-reset">Reset progress</button></div>`);
     $('#passport-reset').addEventListener('click', () => { if (confirm('Clear all stamps and scores on this device?')) { Passport.reset(); Hunt.reset(); Modal.close(); Toast.show('Passport cleared.'); } });

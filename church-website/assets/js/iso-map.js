@@ -43,7 +43,7 @@ window.IsoMap = (function () {
   const EX_DRIVE = [tk(.03, 12), tk(.03, 70), tk(-.02, 150)];
   const HAMMER = [tk(-.08, 150), tk(.04, 150)];                                                             // fire truck turnaround by the house
   // Loop drive as drawn: straight on the CCD side, then one continuous sweep round the front of the church back to the south leg
-  const LOOP = { x0: 200, y0: 168, y1: 426, xc: 300, yc: 300, rx: 130, ry: 132, w: 24 };   // arc from the top leg round the front to the east leg, which runs straight down past the septic field
+  const LOOP = { x0: 192, y0: 168, y1: 426, xc: 300, yc: 300, rx: 130, ry: 132, w: 24 };   // straight west and top legs, one sweep round the front and down past the septic field into the south leg
   const HW = LOOP.w / 2;
   const STALL = 9, DEPTH = 18;
   const CY = (CHURCH.y0 + CHURCH.y1) / 2;
@@ -53,22 +53,21 @@ window.IsoMap = (function () {
   const add = (p, v, k) => [p[0] + v[0] * k, p[1] + v[1] * k];
   const LOOP_CL = (() => {
     const vs = [{ p: [LOOP.x0, LOOP.y0], r: 40 }];
-    ellipseArc(LOOP.xc, LOOP.yc, LOOP.rx, LOOP.ry, -Math.PI / 2, 0, 36).forEach(q => vs.push({ p: q, r: 0 }));
-    vs.push({ p: [LOOP.xe, LOOP.y1], r: 30 }); vs.push({ p: [LOOP.x0, LOOP.y1], r: 30 });
+    ellipseArc(LOOP.xc, LOOP.yc, LOOP.rx, LOOP.ry, -Math.PI / 2, Math.PI / 3, 40).forEach(q => vs.push({ p: q, r: 0 }));
+    vs.push({ p: [LOOP.xc + 44.4, LOOP.y1], r: 30 }); vs.push({ p: [LOOP.x0, LOOP.y1], r: 30 });
     return fillet(vs, 8);
   })();
-  const PK = t => 14 + 32 * Math.pow(Math.max(0, Math.sin(Math.PI * (t - .085) / (.56 - .085))), 0.6);   // pond's inner bank: feet from the road, one smooth bow
+  const PK = t => t < .16 ? 8 + 42 * Math.sin(Math.PI / 2 * Math.max(0, t - .085) / .075) : 14 + 36 * Math.pow(Math.max(0, (.56 - t) / .40), 1.5);   // pond's inner bank: rounded head by the gate, then a concave sweep to the splitter box
   const PC = t => tk(t, PK(t));
-  const POND_ROW = { t0: .14, t1: .40 };                                                  // curved row of stalls along the bank
+  const POND_ROW = { t0: .17, t1: .45 };                                                  // curved row of stalls along the bank
   const EA = { o: [468, 275], u: unit([0.2, 0.98]), len: 148 };                        // east aisle from the loop down to the south-east field
   const EAp = [-EA.u[1], EA.u[0]];                                                        // its normal (points west)
   // Parking rows as drawn: o = start of the row on the aisle edge, u = direction along the row, side = which way the stalls extend (+1 = left of u, -1 = right of u)
   const ROWS = [
-    { o: [209, LOOP.y0 + HW], u: [1, 0], side: 1, n: 10, ada: [0, 1, 2, 3] },          // top row facing the church (4 ADA + regular; continues round the curve)
-    { o: [LOOP.xe - HW, 338], u: [0, 1], side: 1, n: 6, ada: [] },                      // 6 on the east side of the septic field, facing the east leg
-    { o: [305, LOOP.y1 - HW], u: [1, 0], side: -1, n: 9, ada: [] },                    // along the south side of the septic field, facing the south leg
-    { o: [225, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
-    { o: [303, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
+    { o: [201, LOOP.y0 + HW], u: [1, 0], side: 1, n: 11, ada: [0, 1, 2, 3] },          // top row facing the church (4 ADA + regular; continues round the curve)
+    { o: [240, LOOP.y1 - HW], u: [1, 0], side: -1, n: 7, ada: [] },                    // 7 along the south side of the septic field
+    { o: [217, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
+    { o: [295, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
     { o: [LOOP.x0 - HW, 292], u: [0, 1], side: 1, n: 7, ada: [0, 1, 2, 3, 4, 5, 6] },  // 7 ADA by the CCD
     { o: add(add(EA.o, EA.u, 40), EAp, 12), u: EA.u, side: 1, n: 10, ada: [] },        // 10 between the loop and the east aisle
     { o: add(EA.o, EAp, -12), u: EA.u, side: -1, n: 13, ada: [] },                     // 16 along the east aisle, by the basin
@@ -76,14 +75,15 @@ window.IsoMap = (function () {
   ];
   ROWS.forEach(rw => { rw.u = unit(rw.u); rw.v = rw.side > 0 ? [-rw.u[1], rw.u[0]] : [rw.u[1], -rw.u[0]]; });
   const aP = y => Math.asin((y - LOOP.yc) / (LOOP.ry - HW)) * 180 / Math.PI;
-  const ARC_STALLS = [{ a: [-90, aP(CY - 14)], out: false }, { a: [aP(CY + 14), 0], out: false }];   // radial stalls round the inside of the curve; gap at the entry plaza
-  const ENTRY_DRIVE = [tk(.03, -11), tk(.05, 22), tk(.09, 50)].concat([.14, .2, .26, .32, .38].map(t => tk(t, PK(t) + 32)), [tk(.42, 80), tk(.45, 88)]);   // lane from the gate, following the pond bank, into the loop's curve
-  const EAST_AISLE = [[LOOP.x1 - 4, 266], EA.o, add(EA.o, EA.u, EA.len)];                                                   // aisle to the south-east field
+  const ARC_STALLS = [{ a: [-90, aP(CY - 14)], out: false }, { a: [aP(CY + 14), 60], out: false }];   // radial stalls round the inside of the curve; gap at the entry plaza; the lower ones back onto the septic field
+  const ENTRY_DRIVE = [tk(.03, -11), tk(.05, 22), tk(.09, 50)].concat([.14, .2, .26, .32, .38].map(t => tk(t, PK(t) + 32)), [tk(.44, 52), tk(.52, 52), EA.o, add(EA.o, EA.u, EA.len)]);   // outer lane: gate, along the pond bank, past the plaza, down the east aisle
+  const OUTER_X = (() => { const t = (CY - SITE.N[1] - n[1] * 52) / RD[1]; return tk(t, 52)[0]; })();   // where the outer lane's centreline crosses the church axis
+  const EAST_AISLE = [[LOOP.xc + 40, LOOP.y1], add(EA.o, EA.u, EA.len)];                                                    // south leg carries on east to the foot of the east aisle
   const CCD_LOOP = [[LOOP.x0 - HW + 2, CCD.y0 - 16], [CCD.x0 - 16, CCD.y0 - 16], [CCD.x0 - 16, CCD.y1 + 16], [CCD.x1 + 16, CCD.y1 + 16], [LOOP.x0 + 18, LOOP.y1 + 6]];   // paved loop round the CCD, back into the church loop
   const POND = (() => { const q = [tk(.085, 8), tk(.56, 8)]; for (let t = .56; t >= .085; t -= .01) q.push(PC(t)); return q; })();
   const BASIN = [tk(.575, 8), tk(.93, 8), tk(.94, 26), tk(.86, 86)];                                                        // filtration basin for water quality
   const PED = { t: 0.512, w: 9 };                                                                                           // walkers' entrance at the centre of the frontage, on the church axis
-  const SEPTIC = [[295, 338], [400, 338], [400, LOOP.y1 - HW - DEPTH], [295, LOOP.y1 - HW - DEPTH]];                 // 105 x 58 septic field inside the loop, stalls along its east and south sides
+  const SEPTIC = (() => { const Ri = [LOOP.rx - HW - DEPTH, LOOP.ry - HW - DEPTH], yb = LOOP.y1 - HW - DEPTH, a0 = Math.asin((340 - LOOP.yc) / Ri[1]); const e = ellipseArc(LOOP.xc, LOOP.yc, Ri[0], Ri[1], a0, 70 * Math.PI / 180, 16); return [[240, 340]].concat(e, [[e[e.length - 1][0], yb], [240, yb]]); })();   // septic field inside the loop: straight top, stall ends down its east side, south row below
   const FUTURE = [[40, 52], [150, 52], [150, 130], [40, 130]];                                                                // reserved for future construction (to confirm)
   const WELL = M(245, 523), TANK = M(367, 477);
 
@@ -369,15 +369,20 @@ window.IsoMap = (function () {
     const gp = S('g', { 'data-item': 'church', class: 'item' }, g); itemParts.church.push(gp);
     const cy = (CHURCH.y0 + CHURCH.y1) / 2;
     // sidewalk ring between the nose-in stalls and the church: along the north wall and round the curve
-    const Ri = [LOOP.rx - HW - DEPTH, LOOP.ry - HW - DEPTH], aS = 0;
-    poly(gp, [[209, LOOP.y0 + HW + DEPTH], [LOOP.xc, LOOP.y0 + HW + DEPTH], [LOOP.xc, LOOP.y0 + HW + DEPTH + 6], [209, LOOP.y0 + HW + DEPTH + 6]], { fill: '#e9e2d3' });
-    poly(gp, ellipseArc(LOOP.xc, LOOP.yc, Ri[0], Ri[1], -Math.PI / 2, aS, 30).concat(ellipseArc(LOOP.xc, LOOP.yc, Ri[0] - 6, Ri[1] - 6, aS, -Math.PI / 2, 30)), { fill: '#e9e2d3' });
-    poly(gp, [[CHURCH.x1, cy - 14], [LOOP.axIn, cy - 14], [LOOP.axIn, cy + 14], [CHURCH.x1, cy + 14]], { fill: 'url(#hatch)' });     // entry plaza on the axis
-    // walkers' promenade: from the foot of the bridge to the crosswalk over the loop and the plaza
-    const E = tk(PED.t, 42);
-    poly(g, [[LOOP.axOut - 2, cy - 6], [E[0], cy - 6], [E[0], cy + 6], [LOOP.axOut - 2, cy + 6]], { fill: '#e9e2d3' });
-    for (let x = LOOP.axOut + 4; x < E[0] - 4; x += 8) poly(g, [[x, cy - 0.8], [x + 4, cy - 0.8], [x + 4, cy + 0.8], [x, cy + 0.8]], { fill: '#cfc5b0', opacity: .8 });
+    // walkway ring round the church: along the top row, round the front at the stall ends, back along the south side and up the west side
+    const Ri = [LOOP.rx - HW - DEPTH, LOOP.ry - HW - DEPTH], aS = 20 * Math.PI / 180, yT = LOOP.y0 + HW + DEPTH, xW = LOOP.x0 + HW + 2, yS = 330;
+    const walkCol = '#e9e2d3';
+    poly(gp, [[xW, yT], [LOOP.xc, yT], [LOOP.xc, yT + 6], [xW, yT + 6]], { fill: walkCol });
+    poly(gp, ellipseArc(LOOP.xc, LOOP.yc, Ri[0], Ri[1], -Math.PI / 2, aS, 30).concat(ellipseArc(LOOP.xc, LOOP.yc, Ri[0] - 6, Ri[1] - 6, aS, -Math.PI / 2, 30)), { fill: walkCol });
+    const eS = LOOP.xc + (Ri[0] - 3) * Math.cos(aS);
+    poly(gp, [[xW, yS], [eS, yS], [eS, yS + 6], [xW, yS + 6]], { fill: walkCol });
+    poly(gp, [[xW, yT], [xW + 6, yT], [xW + 6, yS + 6], [xW, yS + 6]], { fill: walkCol });
+    // entry plaza on the axis: church to the loop, crosswalk over the loop, plaza between the lanes, crosswalk over the outer lane to the bridge
+    const xo0 = OUTER_X - 14, xo1 = OUTER_X + 14;
+    poly(gp, [[CHURCH.x1, cy - 14], [LOOP.axIn, cy - 14], [LOOP.axIn, cy + 14], [CHURCH.x1, cy + 14]], { fill: 'url(#hatch)' });
     for (let x = LOOP.axIn + 2; x < LOOP.axOut - 2; x += 5) poly(g, [[x, cy - 6], [x + 2.5, cy - 6], [x + 2.5, cy + 6], [x, cy + 6]], { fill: '#f4f4f4', opacity: .9 });
+    poly(g, [[LOOP.axOut, cy - 14], [xo0, cy - 14], [xo0, cy + 14], [LOOP.axOut, cy + 14]], { fill: 'url(#hatch)' });
+    for (let x = xo0 + 2; x < xo1 - 2; x += 5) poly(g, [[x, cy - 6], [x + 2.5, cy - 6], [x + 2.5, cy + 6], [x, cy + 6]], { fill: '#f4f4f4', opacity: .9 });
     const gc = S('g', { 'data-item': 'ccd', class: 'item' }, g); itemParts.ccd.push(gc);
     poly(gc, [[CCD.x1, CCD.y0 + 44], [LOOP.x0 - HW - 18, CCD.y0 + 44], [LOOP.x0 - HW - 18, CCD.y0 + 56], [CCD.x1, CCD.y0 + 56]], { fill: '#e9e2d3' });   // walk to the ADA stalls
     poly(gc, [[CCD.x1, CCD.y0 - 3], [CCD.x1 + 12, CCD.y0 - 3], [CCD.x1 + 12, CCD.y1 + 3], [CCD.x1, CCD.y1 + 3]], { fill: '#e9e2d3' });
@@ -518,7 +523,7 @@ window.IsoMap = (function () {
   }
   function drawParkedCars(objs) {
     const cols = ['#e63946', '#f4a261', '#2a9d8f', '#8338ec', '#ffd166', '#118ab2', '#ffffff', '#6c757d', '#ff70a6', '#06d6a0', '#c1121f', '#3a86ff'];
-    const spots = [[0, 5], [0, 8], [1, 1], [1, 4], [2, 2], [2, 6], [3, 1], [3, 5], [4, 2], [4, 6], [5, 2], [6, 3], [6, 8], [7, 2], [7, 7], [7, 11], [8, 2], [8, 5]];
+    const spots = [[0, 5], [0, 8], [1, 2], [1, 5], [2, 1], [2, 5], [3, 2], [3, 6], [4, 2], [5, 3], [5, 8], [6, 2], [6, 7], [6, 11], [7, 2], [7, 5]];
     spots.forEach(([ri, si], k) => {
       const rw = ROWS[ri]; if (si >= rw.n) return;
       const c = add(add(rw.o, rw.u, (si + .5) * STALL), rw.v, DEPTH / 2);
@@ -548,7 +553,7 @@ window.IsoMap = (function () {
     objs.push({ depth: sgn[1] - sgn[0], node: g3 });
   }
   function drawPoles(objs) {
-    [[LOOP.x0 + 70, LOOP.y0 - 20], [LOOP.x0 + 50, 330], [LOOP.xc + 60, LOOP.y0 - 14], [add(add(EA.o, EA.u, 100), EAp, -34)[0], add(add(EA.o, EA.u, 100), EAp, -34)[1]], [tk(.3, 52)[0], tk(.3, 52)[1]], [CCD.x0 - 28, CCD.y1 + 30]].forEach(([x, y]) => {
+    [[LOOP.x0 + 70, LOOP.y0 - 20], [LOOP.x0 + 30, 365], [LOOP.xc + 60, LOOP.y0 - 14], [add(add(EA.o, EA.u, 100), EAp, -34)[0], add(add(EA.o, EA.u, 100), EAp, -34)[1]], [tk(.3, 52)[0], tk(.3, 52)[1]], [CCD.x0 - 28, CCD.y1 + 30]].forEach(([x, y]) => {
       const g = S('g', {}, null);
       line(g, [x, y, 0], [x, y, 22], { stroke: '#8a8f99', 'stroke-width': 1 });
       const t = P(x, y, 22); S('ellipse', { cx: t[0], cy: t[1], rx: 3, ry: 1.2, fill: '#fff3c4' }, g);
@@ -646,7 +651,7 @@ window.IsoMap = (function () {
   }
   function drawLamps(objs) {
     const base = r(PED.t), cy = (CHURCH.y0 + CHURCH.y1) / 2;
-    const spots = [along(off(base, 3), -13.5), along(off(base, 3), 13.5), along(off(base, 7), -13.5), along(off(base, 7), 13.5), along(off(base, 39), -11), along(off(base, 39), 11), [LOOP.axOut + 12, cy - 9], [LOOP.axOut + 12, cy + 9], [LOOP.axOut + 30, cy - 9], [LOOP.axOut + 30, cy + 9], [CHURCH.x1 + 4, cy - 26], [CHURCH.x1 + 4, cy + 26]];
+    const spots = [along(off(base, 3), -13.5), along(off(base, 3), 13.5), along(off(base, 7), -13.5), along(off(base, 7), 13.5), along(off(base, 39), -11), along(off(base, 39), 11), [LOOP.axOut + 7, cy - 10], [LOOP.axOut + 7, cy + 10], [CHURCH.x1 + 4, cy - 26], [CHURCH.x1 + 4, cy + 26]];
     spots.forEach(([x, y]) => objs.push({ depth: y - x + 2, node: lamp(x, y) }));
   }
   function drawRoadCars() {

@@ -27,49 +27,61 @@ window.IsoMap = (function () {
   const off = (p, k) => [p[0] + n[0] * k, p[1] + n[1] * k];
   const along = (p, k) => [p[0] + d[0] * k, p[1] + d[1] * k];
   const tk = (t, k) => off(r(t), k);
+  const add2 = (p, q) => [p[0] + q[0], p[1] + q[1]];
   const kOf = p => (p[0] - SITE.N[0]) * n[0] + (p[1] - SITE.N[1]) * n[1];
   const tOf = p => ((p[0] - SITE.N[0]) * d[0] + (p[1] - SITE.N[1]) * d[1]) / RL;
 
-  const cc = M(624, 579);
+  const cc = add2(M(624, 579), [-12, 6]);
   const CHURCH = { x0: cc[0] - 62.5, y0: cc[1] - 41, x1: cc[0] + 62.5, y1: cc[1] + 41, h: 22, rh: 18 };          // 125 x 82, front faces the road
-  const cd = M(387, 852);
+  const cd = add2(M(387, 852), [-8, 0]);
   const CCD = { x0: cd[0] - 41, y0: cd[1] - 62.5, x1: cd[0] + 41, y1: cd[1] + 62.5, h: 16, rh: 12 };             // 82 x 125, at right angles to the church
-  const c1 = M(257, 684), c2 = M(367, 638), cyc = (c1[1] + c2[1]) / 2;
+  const c1 = add2(M(257, 684), [-8, 0]), c2 = add2(M(367, 638), [-8, 0]), cyc = (c1[1] + c2[1]) / 2;
   const COURTS = [{ x0: c1[0] - 30, y0: cyc - 15, x1: c1[0] + 30, y1: cyc + 15 }, { x0: c2[0] - 30, y0: cyc - 15, x1: c2[0] + 30, y1: cyc + 15 }];
-  const rc = M(435, 355);
-  const RECTORY = { x0: rc[0] - 24, y0: rc[1] - 15, x1: rc[0] + 24, y1: rc[1] + 15, h: 11, rh: 7 };            // existing residence, near the north boundary
-  const hh = M(430, 280);
-  const HAMMERHEAD = { x0: hh[0] - 50, y0: hh[1] - 10, x1: hh[0] + 50, y1: hh[1] + 10 };                        // existing paved drive / fire truck turnaround
-  const LOOP = { x0: 207, y0: 190, x1: 416, y1: 418, w: 24, r: [50, 60, 40, 40] };   // loop drive centreline bounds; corner radii NE, SE, SW, NW (rounded east end as drawn)
+  // Existing residence (the rectory): long axis parallel to County Road 175, reached by the existing drive and its turnaround
+  const RECTORY = { c: tk(0, 178), u: d, hl: 24, hw: 15, h: 11, rh: 7 };
+  RECTORY.x0 = RECTORY.c[0] - 30; RECTORY.x1 = RECTORY.c[0] + 30; RECTORY.y0 = RECTORY.c[1] - 30; RECTORY.y1 = RECTORY.c[1] + 30;
+  const EX_DRIVE = [tk(.03, 12), tk(.03, 70), tk(-.02, 150)];
+  const HAMMER = [tk(-.08, 150), tk(.04, 150)];                                                             // fire truck turnaround by the house
+  // Loop drive: straight west, top and bottom legs, a half-ellipse around the front of the church, and a diagonal leg back to the south-east corner
+  const LOOP = { x0: 195, y0: 172, y1: 420, xc: 320, yc: 253, rx: 106, ry: 81, aEnd: 45 * Math.PI / 180, se: [318, 420], w: 24 };
+  LOOP.x1 = LOOP.xc + LOOP.rx;
   const HW = LOOP.w / 2;
   const STALL = 9, DEPTH = 18;
   const unit = v => { const L = Math.hypot(v[0], v[1]); return [v[0] / L, v[1] / L]; };
+  const add = (p, v, k) => [p[0] + v[0] * k, p[1] + v[1] * k];
+  const LOOP_CL = (() => {
+    const vs = [{ p: [LOOP.x0, LOOP.y0], r: 40 }];
+    const arc = ellipseArc(LOOP.xc, LOOP.yc, LOOP.rx, LOOP.ry, -Math.PI / 2, LOOP.aEnd, 30);
+    arc.forEach((q, i) => vs.push({ p: q, r: i === arc.length - 1 ? 30 : 0 }));
+    vs.push({ p: LOOP.se, r: 30 }); vs.push({ p: [LOOP.x0, LOOP.y1], r: 30 });
+    return fillet(vs, 8);
+  })();
+  const DG = (() => { const a = [LOOP.xc + Math.cos(LOOP.aEnd) * LOOP.rx, LOOP.yc + Math.sin(LOOP.aEnd) * LOOP.ry]; const u = unit([LOOP.se[0] - a[0], LOOP.se[1] - a[1]]); return { a, u, nin: [-u[1], u[0]] }; })();
   const EA = { o: [452, 272], u: unit([0.16, 0.987]), len: 148 };                        // east aisle from the loop down to the south-east field
   const EAp = [-EA.u[1], EA.u[0]];                                                        // its normal (points west)
-  const add = (p, v, k) => [p[0] + v[0] * k, p[1] + v[1] * k];
   // Parking rows as drawn: o = start of the row on the aisle edge, u = direction along the row, side = which way the stalls extend (+1 = left of u, -1 = right of u)
   const ROWS = [
-    { o: [221, LOOP.y0 - HW], u: [1, 0], side: -1, n: 17, ada: [0, 1, 2, 3] },        // top row along the church (4 ADA + regular; 19 regular in the plan)
-    { o: [LOOP.x1 - HW, 240], u: [0, 1], side: 1, n: 7, ada: [] },                     // 7 inside the rounded east end
-    { o: [LOOP.x1 - HW, 304], u: [0, 1], side: 1, n: 6, ada: [] },                     // 6 inside the east leg
-    { o: [250, LOOP.y1 - HW], u: [1, 0], side: -1, n: 7, ada: [] },                    // 7 inside the south leg
+    { o: [209, LOOP.y0 + HW], u: [1, 0], side: 1, n: 12, ada: [0, 1, 2, 3] },          // top row facing the church (4 ADA + regular; continues round the curve)
+    { o: [235, LOOP.y1 - HW], u: [1, 0], side: -1, n: 7, ada: [] },                    // 7 inside the south leg
     { o: [225, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
-    { o: [303, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 8 outside the south leg
     { o: [LOOP.x0 - HW, 331], u: [0, 1], side: 1, n: 7, ada: [0, 1, 2, 3, 4, 5, 6] },  // 7 ADA by the CCD
-    { o: tk(.16, 63), u: d, side: -1, n: 15, ada: [] },                                // along the pond (16 in the plan)
+    { o: tk(.16, 63), u: d, side: -1, n: 11, ada: [] },                                // along the pond (16 in the plan)
     { o: add(add(EA.o, EA.u, 40), EAp, 12), u: EA.u, side: 1, n: 10, ada: [] },        // 10 between the loop and the east aisle
     { o: add(EA.o, EAp, -12), u: EA.u, side: -1, n: 16, ada: [] },                     // 16 along the east aisle, by the basin
-    { o: [394, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] }                      // 9 at the south-east boundary
+    { o: [394, LOOP.y1 + HW], u: [1, 0], side: 1, n: 8, ada: [] },                     // 9 at the south-east boundary
+    { o: add(add(DG.a, DG.u, 30), DG.nin, HW), u: DG.u, side: 1, n: 6, ada: [] },      // 6 inside the diagonal leg
+    { o: add(add(DG.a, DG.u, 20), DG.nin, -HW), u: DG.u, side: -1, n: 8, ada: [] }     // 8 outside the diagonal leg
   ];
   ROWS.forEach(rw => { rw.u = unit(rw.u); rw.v = rw.side > 0 ? [-rw.u[1], rw.u[0]] : [rw.u[1], -rw.u[0]]; });
-  const ENTRY_DRIVE = [tk(.03, -11), tk(.045, 20), tk(.07, 55), tk(.1, 75), tk(.36, 75)];                                  // gate at the north corner, along the pond, into the loop's rounded end
+  const ARC_STALLS = [[-90, -12], [12, 45]];                                              // degree ranges of radial stalls round the curve (gap = entry plaza)
+  const ENTRY_DRIVE = [tk(.03, -11), tk(.045, 20), tk(.07, 55), tk(.1, 75), tk(.38, 75)];                                  // gate at the north corner, along the pond, into the loop's curve
   const EAST_AISLE = [[LOOP.x1 - 4, 266], EA.o, add(EA.o, EA.u, EA.len)];                                                   // aisle to the south-east field
+  const CCD_LOOP = [[LOOP.x0 - HW + 2, CCD.y0 - 16], [CCD.x0 - 16, CCD.y0 - 16], [CCD.x0 - 16, CCD.y1 + 16], [CCD.x1 + 16, CCD.y1 + 16], [LOOP.x0 + 18, LOOP.y1 + 6]];   // paved loop round the CCD, back into the church loop
   const POND = [tk(.085, 8), tk(.56, 8), tk(.56, 12), tk(.52, 30), tk(.47, 34), tk(.35, 42), tk(.2, 44), tk(.11, 44), tk(.09, 30)];
   const BASIN = [tk(.575, 8), tk(.93, 8), tk(.94, 26), tk(.84, 100)];                                                        // filtration basin for water quality
-  const PED = { t: 0.5, w: 9 };                                                                                             // walkers' entrance at the centre of the frontage, on the church axis
+  const PED = { t: 0.512, w: 9 };                                                                                           // walkers' entrance at the centre of the frontage, on the church axis
   const SEPTIC = [[CHURCH.x0 + 10, CHURCH.y1 + 8], [CHURCH.x1 - 10, CHURCH.y1 + 8], [CHURCH.x1 - 10, CHURCH.y1 + 60], [CHURCH.x0 + 10, CHURCH.y1 + 60]];
   const FUTURE = [[40, 52], [150, 52], [150, 130], [40, 130]];                                                                // reserved for future construction (to confirm)
-  const GRAVEL = [[CCD.x1 + 14, CCD.y0 - 14], [CCD.x0 - 14, CCD.y0 - 14], [CCD.x0 - 14, CCD.y1 + 14], [CCD.x1 + 14, CCD.y1 + 14], [CCD.x1 + 14, CCD.y0 - 14], [LOOP.x0 - HW, CCD.y0 - 14]];
   const WELL = M(245, 523), TANK = M(367, 477);
 
   /* ---------------- helpers ---------------- */
@@ -80,6 +92,46 @@ window.IsoMap = (function () {
     const corners = [[x1 - R[0], y0 + R[0], -Math.PI / 2, 0, R[0]], [x1 - R[1], y1 - R[1], 0, Math.PI / 2, R[1]], [x0 + R[2], y1 - R[2], Math.PI / 2, Math.PI, R[2]], [x0 + R[3], y0 + R[3], Math.PI, Math.PI * 1.5, R[3]]];
     corners.forEach(([cx, cy, a0, a1, rr]) => { for (let i = 0; i <= seg; i++) { const a = a0 + (a1 - a0) * i / seg; out.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); } });
     return out;
+  }
+  function ellipseArc(cx, cy, rx, ry, a0, a1, seg) { const out = []; for (let i = 0; i <= seg; i++) { const a = a0 + (a1 - a0) * i / seg; out.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]); } return out; }
+  // Round the corners of a closed polyline: verts = [{p, r}], r = 0 keeps the vertex sharp
+  function fillet(verts, seg) {
+    const out = [], n = verts.length;
+    for (let i = 0; i < n; i++) {
+      const A = verts[(i - 1 + n) % n].p, B = verts[i].p, C = verts[(i + 1) % n].p, r = verts[i].r;
+      if (!r) { out.push(B); continue; }
+      const d1 = unit([B[0] - A[0], B[1] - A[1]]), d2 = unit([C[0] - B[0], C[1] - B[1]]);
+      const theta = Math.acos(Math.max(-1, Math.min(1, d1[0] * d2[0] + d1[1] * d2[1])));
+      if (theta < 0.02) { out.push(B); continue; }
+      const t = r * Math.tan(theta / 2), p1 = [B[0] - d1[0] * t, B[1] - d1[1] * t], p2 = [B[0] + d2[0] * t, B[1] + d2[1] * t];
+      const cross = d1[0] * d2[1] - d1[1] * d2[0], nrm = cross > 0 ? [-d1[1], d1[0]] : [d1[1], -d1[0]];
+      const c = [p1[0] + nrm[0] * r, p1[1] + nrm[1] * r];
+      const a0 = Math.atan2(p1[1] - c[1], p1[0] - c[0]), a1 = Math.atan2(p2[1] - c[1], p2[0] - c[0]);
+      let da = a1 - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+      for (let k = 0; k <= seg; k++) { const a = a0 + da * k / seg; out.push([c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r]); }
+    }
+    return out;
+  }
+  // Offset a closed polygon (clockwise on screen) inward by k (negative = outward)
+  function offsetPoly(poly, k) {
+    const n = poly.length, out = [];
+    for (let i = 0; i < n; i++) {
+      const A = poly[(i - 1 + n) % n], B = poly[i], C = poly[(i + 1) % n];
+      const d1 = unit([B[0] - A[0], B[1] - A[1]]), d2 = unit([C[0] - B[0], C[1] - B[1]]);
+      const n1 = [-d1[1], d1[0]], n2 = [-d2[1], d2[0]];
+      let m = [n1[0] + n2[0], n1[1] + n2[1]]; const L = Math.hypot(m[0], m[1]) || 1; m = [m[0] / L, m[1] / L];
+      const sc = k / Math.max(0.5, m[0] * n1[0] + m[1] * n1[1]);
+      out.push([B[0] + m[0] * sc, B[1] + m[1] * sc]);
+    }
+    return out;
+  }
+  // A box in any orientation: u = its long axis; draws the faces that look toward the camera, then the top
+  function rotBox(g, cx, cy, u, hl, hw, z0, h, col) {
+    const v = [-u[1], u[0]], q = (a, b, z) => [cx + u[0] * a + v[0] * b, cy + u[1] * a + v[1] * b, z];
+    [[q(-hl, -hw, z0), q(hl, -hw, z0), [-v[0], -v[1]]], [q(hl, -hw, z0), q(hl, hw, z0), u], [q(hl, hw, z0), q(-hl, hw, z0), v], [q(-hl, hw, z0), q(-hl, -hw, z0), [-u[0], -u[1]]]].forEach(([a, b, nrm]) => {
+      const f = -nrm[0] + nrm[1]; if (f <= 0.05) return; poly(g, [a, b, [b[0], b[1], z0 + h], [a[0], a[1], z0 + h]], { fill: shade(col, .72 + .2 * f) });
+    });
+    poly(g, [q(-hl, -hw, z0 + h), q(hl, -hw, z0 + h), q(hl, hw, z0 + h), q(-hl, hw, z0 + h)], { fill: shade(col, 1.08) });
   }
   function ellipsePts(cx, cy, rx, ry, seg, z) { const out = []; for (let i = 0; i < (seg || 24); i++) { const a = i / (seg || 24) * Math.PI * 2; out.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, z || 0]); } return out; }
   function poly(parent, points3d, attrs) { const p = S('polygon', Object.assign({ points: pts(points3d) }, attrs || {})); parent.append(p); return p; }
@@ -149,7 +201,7 @@ window.IsoMap = (function () {
     ['terrain', 'ground', 'objects', 'tags', 'fx', 'dim', 'lift'].forEach(k => layers[k] = S('g', { id: 'L-' + k }, world));
     itemParts = { church: [], ccd: [], courts: [], parking: [], pond: [], rectory: [] };
 
-    drawTerrain(); drawRoad(); drawLawn(); drawWater(); drawExistingDrive(); drawDrives(); drawParking(); drawGravel(); drawCourts(); drawZones(); drawWalks();
+    drawTerrain(); drawRoad(); drawLawn(); drawWater(); drawExistingDrive(); drawDrives(); drawParking(); drawCourts(); drawZones(); drawWalks();
     const objs = [];
     objs.push({ depth: depthOf(CHURCH), node: drawChurch() });
     objs.push({ depth: depthOf(CCD), node: drawCcd() });
@@ -181,7 +233,7 @@ window.IsoMap = (function () {
     }
     return g;
   }
-  function loopRing(inset) { return roundedRect(LOOP.x0 + inset, LOOP.y0 + inset, LOOP.x1 - inset, LOOP.y1 - inset, LOOP.r.map(x => Math.max(4, x - inset))); }
+  function loopRing(inset) { return offsetPoly(LOOP_CL, inset); }
 
   /* ---------------- ground ---------------- */
   function drawTerrain() {
@@ -232,23 +284,26 @@ window.IsoMap = (function () {
   }
   function drawExistingDrive() {
     const g = layers.ground;
-    band(g, [tk(.03, 14), [HAMMERHEAD.x1, (HAMMERHEAD.y0 + HAMMERHEAD.y1) / 2]], 7, '#a3a39a');
-    poly(g, [[HAMMERHEAD.x0, HAMMERHEAD.y0], [HAMMERHEAD.x1, HAMMERHEAD.y0], [HAMMERHEAD.x1, HAMMERHEAD.y1], [HAMMERHEAD.x0, HAMMERHEAD.y1]], { fill: '#a3a39a' });
-    band(g, [[HAMMERHEAD.x0 + 20, HAMMERHEAD.y1], [RECTORY.x1 - 8, RECTORY.y0 - 2]], 5, '#b5b5ad');   // short drive to the house
+    band(g, EX_DRIVE, 6, '#a3a39a');
+    band(g, HAMMER, 6, '#a3a39a');
+    const B = RECTORY, v = [-B.u[1], B.u[0]];
+    band(g, [add(add(B.c, B.u, 6), v, -B.hw - 1), add(add(B.c, B.u, 6), v, -B.hw - 14)], 4, '#b5b5ad');   // path from the turnaround to the door
   }
   function drawDrives() {
     const g = S('g', { 'data-item': 'parking', class: 'item' }, layers.ground); itemParts.parking.push(g);
     S('path', { d: pathFromLoops([loopRing(-HW), loopRing(HW)]), fill: '#4b4f57', 'fill-rule': 'evenodd' }, g);
     band(g, ENTRY_DRIVE, HW, '#4b4f57');
     band(g, EAST_AISLE, HW, '#4b4f57');
+    band(g, CCD_LOOP, 10, '#4b4f57');
     // flared apron at the gate, and the pond culvert headwalls
     poly(g, [tk(.0, -11), tk(.06, -11), tk(.055, -4), tk(.005, -4)], { fill: '#4b4f57' });
     // centre lines and one-way arrows
-    [[LOOP.x0, (LOOP.y0 + LOOP.y1) / 2, 'S'], [(LOOP.x0 + LOOP.x1) / 2, LOOP.y1, 'E'], [LOOP.x1, (LOOP.y0 + LOOP.y1) / 2 + 20, 'N'], [(LOOP.x0 + LOOP.x1) / 2, LOOP.y0, 'W']].forEach(([x, y, dir]) => {
+    [[LOOP.x0, 300, 'S'], [265, LOOP.y1, 'E'], [LOOP.x1, LOOP.yc + 12, 'N'], [265, LOOP.y0, 'W']].forEach(([x, y, dir]) => {
       const dx = dir === 'E' ? 6 : dir === 'W' ? -6 : 0, dy = dir === 'S' ? 6 : dir === 'N' ? -6 : 0;
       poly(g, [[x + dx, y + dy], [x - dx * .6 + dy * .6, y - dy * .6 + dx * .6], [x - dx * .6 - dy * .6, y - dy * .6 - dx * .6]], { fill: '#ffffff', opacity: .85 });
     });
   }
+  let arcSpots = [];
   function drawParking() {
     const g = S('g', { 'data-item': 'parking', class: 'item' }, layers.ground); itemParts.parking.push(g);
     ROWS.forEach(rw => {
@@ -258,11 +313,18 @@ window.IsoMap = (function () {
       for (let i = 0; i <= rw.n; i++) line(g, [...at(i * STALL, 0), 0], [...at(i * STALL, DEPTH), 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 });
       rw.ada.forEach(i => poly(g, [at(i * STALL + 1, 1), at((i + 1) * STALL - 1, 1), at((i + 1) * STALL - 1, DEPTH - 1), at(i * STALL + 1, DEPTH - 1)], { fill: '#2f6fd6', opacity: .85 }));
     });
-  }
-  function drawGravel() {
-    const g = layers.ground;
-    S('polyline', { points: pts(GRAVEL), fill: 'none', stroke: 'url(#gravel)', 'stroke-width': 15, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
-    S('polyline', { points: pts(GRAVEL), fill: 'none', stroke: '#b9ab8d', 'stroke-width': 1, opacity: .6, 'stroke-dasharray': '3 4', 'stroke-linejoin': 'round' }, g);
+    // radial stalls on the inside of the curve, nose-in toward the church
+    const Ro = [LOOP.rx - HW, LOOP.ry - HW], Ri = [Ro[0] - DEPTH, Ro[1] - DEPTH], Rm = [Ro[0] - DEPTH / 2, Ro[1] - DEPTH / 2];
+    const E = (R, a) => [LOOP.xc + Math.cos(a) * R[0], LOOP.yc + Math.sin(a) * R[1]];
+    arcSpots = [];
+    ARC_STALLS.forEach(([d0, d1]) => {
+      const a0 = d0 * Math.PI / 180, a1 = d1 * Math.PI / 180;
+      poly(g, ellipseArc(LOOP.xc, LOOP.yc, Ro[0], Ro[1], a0, a1, 24).concat(ellipseArc(LOOP.xc, LOOP.yc, Ri[0], Ri[1], a1, a0, 24)), { fill: '#4b4f57' });
+      const bounds = [a0]; let acc = 0, prev = E(Ro, a0);
+      for (let a = a0; a <= a1 + 1e-6; a += (a1 - a0) / 400) { const q = E(Ro, a); acc += Math.hypot(q[0] - prev[0], q[1] - prev[1]); prev = q; if (acc >= STALL) { bounds.push(a); acc = 0; } }
+      bounds.forEach(a => line(g, [...E(Ro, a), 0], [...E(Ri, a), 0], { stroke: '#e9e9e9', 'stroke-width': 1, opacity: .85 }));
+      for (let i = 0; i + 1 < bounds.length; i++) { const a = (bounds[i] + bounds[i + 1]) / 2; arcSpots.push({ c: E(Rm, a), u: unit([Math.cos(a) / Ro[0], Math.sin(a) / Ro[1]]) }); }
+    });
   }
   function drawCourts() {
     const g = S('g', { 'data-item': 'courts', class: 'item' }, layers.ground); itemParts.courts.push(g);
@@ -292,7 +354,11 @@ window.IsoMap = (function () {
     const g = layers.ground;
     const gp = S('g', { 'data-item': 'church', class: 'item' }, g); itemParts.church.push(gp);
     const cy = (CHURCH.y0 + CHURCH.y1) / 2;
-    poly(gp, [[CHURCH.x1, cy - 21], [LOOP.x1 - HW, cy - 21], [LOOP.x1 - HW, cy + 21], [CHURCH.x1, cy + 21]], { fill: 'url(#hatch)' });     // entry plaza on the axis
+    // sidewalk ring between the nose-in stalls and the church: along the north wall and round the curve
+    const Ri = [LOOP.rx - HW - DEPTH, LOOP.ry - HW - DEPTH];
+    poly(gp, [[209, LOOP.y0 + HW + DEPTH], [LOOP.xc, LOOP.y0 + HW + DEPTH], [LOOP.xc, CHURCH.y0 - 2], [209, CHURCH.y0 - 2]], { fill: '#e9e2d3' });
+    poly(gp, ellipseArc(LOOP.xc, LOOP.yc, Ri[0], Ri[1], -Math.PI / 2, LOOP.aEnd, 30).concat(ellipseArc(LOOP.xc, LOOP.yc, Ri[0] - 6, Ri[1] - 6, LOOP.aEnd, -Math.PI / 2, 30)), { fill: '#e9e2d3' });
+    poly(gp, [[CHURCH.x1, cy - 14], [LOOP.x1 - HW, cy - 14], [LOOP.x1 - HW, cy + 14], [CHURCH.x1, cy + 14]], { fill: 'url(#hatch)' });     // entry plaza on the axis
     // walkers' promenade: from the foot of the bridge to the crosswalk over the loop and the plaza
     const E = tk(PED.t, 42);
     poly(g, [[LOOP.x1 + HW - 2, cy - 6], [E[0], cy - 6], [E[0], cy + 6], [LOOP.x1 + HW - 2, cy + 6]], { fill: '#e9e2d3' });
@@ -380,24 +446,30 @@ window.IsoMap = (function () {
   /* ---------------- objects ---------------- */
   function drawRectory() {
     const B = RECTORY, g = S('g', { 'data-item': 'rectory', class: 'item building' }, null); itemParts.rectory.push(g);
-    const foot = [[B.x0, B.y0, 0], [B.x1, B.y0, 0], [B.x1, B.y1, 0], [B.x0, B.y1, 0]];
-    const glow = S('g', { class: 'glow', filter: 'url(#glowf)' }, g); poly(glow, [[B.x0 - 8, B.y0 - 8], [B.x1 + 8, B.y0 - 8], [B.x1 + 8, B.y1 + 8], [B.x0 - 8, B.y1 + 8]], { fill: '#ffd166', opacity: .5 });
+    const u = B.u, v = [-u[1], u[0]], hl = B.hl, hw = B.hw, h = B.h, rh = B.rh;
+    const q = (a, b, z) => [B.c[0] + u[0] * a + v[0] * b, B.c[1] + u[1] * a + v[1] * b, z || 0];
+    const foot = [q(-hl, -hw), q(hl, -hw), q(hl, hw), q(-hl, hw)];
+    const glow = S('g', { class: 'glow', filter: 'url(#glowf)' }, g); poly(glow, [q(-hl - 8, -hw - 8), q(hl + 8, -hw - 8), q(hl + 8, hw + 8), q(-hl - 8, hw + 8)], { fill: '#ffd166', opacity: .5 });
     shadowFor(g, foot, 6, 5, .3);
-    const wall = '#e8dcc6', mid = (B.y0 + B.y1) / 2;
-    poly(g, [[B.x0, B.y0, 0], [B.x0, B.y1, 0], [B.x0, B.y1, B.h], [B.x0, B.y0, B.h]], { fill: shade(wall, .8) });
-    poly(g, [[B.x0, B.y1, 0], [B.x1, B.y1, 0], [B.x1, B.y1, B.h], [B.x0, B.y1, B.h]], { fill: shade(wall, .95) });
-    [[B.x0 + 6, 7], [B.x0 + 20, 7], [B.x0 + 36, 7]].forEach(([x, w]) => poly(g, [[x, B.y1, 3.5], [x + w, B.y1, 3.5], [x + w, B.y1, 8.5], [x, B.y1, 8.5]], { fill: '#9fd3e8', stroke: '#5b6f78', 'stroke-width': .7 }));
-    poly(g, [[B.x0 + 28, B.y1, 0], [B.x0 + 33, B.y1, 0], [B.x0 + 33, B.y1, 8], [B.x0 + 28, B.y1, 8]], { fill: '#6b3f2a' });
-    poly(g, [[B.x0, B.y0 + 7, 3.5], [B.x0, B.y0 + 14, 3.5], [B.x0, B.y0 + 14, 8.5], [B.x0, B.y0 + 7, 8.5]], { fill: '#8fc3d8', stroke: '#5b6f78', 'stroke-width': .7 });
-    poly(g, [[B.x0, B.y0, B.h], [B.x0, B.y1, B.h], [B.x0, mid, B.h + B.rh]], { fill: shade(wall, .8) });
-    poly(g, [[B.x0, B.y0, B.h], [B.x1, B.y0, B.h], [B.x1, mid, B.h + B.rh], [B.x0, mid, B.h + B.rh]], { fill: '#6e5a4a' });
-    poly(g, [[B.x0, mid, B.h + B.rh], [B.x1, mid, B.h + B.rh], [B.x1, B.y1, B.h], [B.x0, B.y1, B.h]], { fill: '#8a715c' });
-    line(g, [B.x0, mid, B.h + B.rh], [B.x1, mid, B.h + B.rh], { stroke: '#a28a72', 'stroke-width': 1.2, 'stroke-linecap': 'round' });
-    box(g, B.x1 - 12, mid - 2, B.x1 - 8, mid + 2, B.h + 2, 6, '#b06b4a');   // chimney
-    // porch on the south face
-    poly(g, [[B.x0 + 24, B.y1, 7], [B.x0 + 38, B.y1, 7], [B.x0 + 38, B.y1 + 6, 7], [B.x0 + 24, B.y1 + 6, 7]], { fill: '#8a715c' });
-    [[B.x0 + 25, B.y1 + 5], [B.x0 + 37, B.y1 + 5]].forEach(([x, y]) => line(g, [x, y, 0], [x, y, 7], { stroke: '#cbb995', 'stroke-width': 1.2 }));
-    addStar(g, 'rectory', [B.x1, B.y0, B.h + B.rh + 16]);
+    const wall = '#e8dcc6';
+    [[q(-hl, -hw), q(hl, -hw), [-v[0], -v[1]]], [q(hl, -hw), q(hl, hw), u], [q(hl, hw), q(-hl, hw), v], [q(-hl, hw), q(-hl, -hw), [-u[0], -u[1]]]].forEach(([a, b, nrm]) => {
+      const f = -nrm[0] + nrm[1]; if (f <= 0.05) return; poly(g, [a, b, [b[0], b[1], h], [a[0], a[1], h]], { fill: shade(wall, .76 + .18 * f) });
+    });
+    // windows and door on the wall that faces the campus, one window on the end wall
+    [[-hl + 5, 7], [-hl + 18, 7], [hl - 9, 6]].forEach(([a, w]) => poly(g, [q(a, hw, 3.5), q(a + w, hw, 3.5), q(a + w, hw, 8.5), q(a, hw, 8.5)], { fill: '#9fd3e8', stroke: '#5b6f78', 'stroke-width': .7 }));
+    poly(g, [q(hl, -6, 3.5), q(hl, 1, 3.5), q(hl, 1, 8.5), q(hl, -6, 8.5)], { fill: '#8fc3d8', stroke: '#5b6f78', 'stroke-width': .7 });
+    const da = 2; poly(g, [q(da, hw, 0), q(da + 5, hw, 0), q(da + 5, hw, 8), q(da, hw, 8)], { fill: '#6b3f2a' });
+    // gable roof along the long axis: far slope first, then the end gable, then the near slope
+    poly(g, [q(-hl, -hw, h), q(hl, -hw, h), q(hl, 0, h + rh), q(-hl, 0, h + rh)], { fill: '#6e5a4a' });
+    poly(g, [q(hl, -hw, h), q(hl, hw, h), q(hl, 0, h + rh)], { fill: shade(wall, .82) });
+    poly(g, [q(-hl, 0, h + rh), q(hl, 0, h + rh), q(hl, hw, h), q(-hl, hw, h)], { fill: '#8a715c' });
+    line(g, q(-hl, 0, h + rh), q(hl, 0, h + rh), { stroke: '#a28a72', 'stroke-width': 1.2, 'stroke-linecap': 'round' });
+    const ch = q(-hl * .45, 0, 0); rotBox(g, ch[0], ch[1], u, 2.2, 2.2, h + 2, 6, '#b06b4a');   // chimney
+    // porch over the door
+    poly(g, [q(da - 4, hw, .6), q(da + 9, hw, .6), q(da + 9, hw + 6, .6), q(da - 4, hw + 6, .6)], { fill: '#d9cdb5' });
+    poly(g, [q(da - 4, hw, 7), q(da + 9, hw, 7), q(da + 9, hw + 6, 7), q(da - 4, hw + 6, 7)], { fill: '#8a715c' });
+    [q(da - 3, hw + 5), q(da + 8, hw + 5)].forEach(p0 => line(g, [p0[0], p0[1], 0], [p0[0], p0[1], 7], { stroke: '#cbb995', 'stroke-width': 1.2 }));
+    addStar(g, 'rectory', q(hl, -hw, h + rh + 16));
     return g;
   }
   function drawCourtsObjects(objs) {
@@ -432,12 +504,17 @@ window.IsoMap = (function () {
   }
   function drawParkedCars(objs) {
     const cols = ['#e63946', '#f4a261', '#2a9d8f', '#8338ec', '#ffd166', '#118ab2', '#ffffff', '#6c757d', '#ff70a6', '#06d6a0', '#c1121f', '#3a86ff'];
-    const spots = [[0, 5], [0, 9], [0, 13], [0, 16], [1, 1], [1, 4], [2, 2], [3, 1], [3, 5], [4, 2], [4, 6], [5, 1], [5, 5], [6, 1], [6, 4], [7, 2], [7, 7], [7, 12], [8, 3], [8, 8], [9, 2], [9, 7], [9, 13], [10, 2], [10, 5]];
+    const spots = [[0, 5], [0, 8], [0, 11], [1, 1], [1, 4], [2, 2], [2, 6], [3, 2], [4, 2], [4, 6], [4, 9], [5, 3], [5, 8], [6, 2], [6, 7], [6, 13], [7, 2], [7, 5], [8, 1], [8, 4], [9, 2], [9, 6]];
     spots.forEach(([ri, si], k) => {
       const rw = ROWS[ri]; if (si >= rw.n) return;
       const c = add(add(rw.o, rw.u, (si + .5) * STALL), rw.v, DEPTH / 2);
       const g = carAt(c[0], c[1], rw.v, cols[k % cols.length], { 'data-item': 'parking', class: 'item' });
       itemParts.parking.push(g); objs.push({ depth: c[1] - c[0], node: g });
+    });
+    [1, 4, 7, 10, 13, 15].forEach((i, k) => {
+      const sp = arcSpots[i]; if (!sp) return;
+      const g = carAt(sp.c[0], sp.c[1], sp.u, cols[(k + 5) % cols.length], { 'data-item': 'parking', class: 'item' });
+      itemParts.parking.push(g); objs.push({ depth: sp.c[1] - sp.c[0], node: g });
     });
   }
   function drawGate(objs) {
@@ -457,7 +534,7 @@ window.IsoMap = (function () {
     objs.push({ depth: sgn[1] - sgn[0], node: g3 });
   }
   function drawPoles(objs) {
-    [[LOOP.x0 + 60, LOOP.y0 - 34], [LOOP.x0 + 150, LOOP.y0 - 34], [LOOP.x0 + 60, LOOP.y1 + 34], [LOOP.x1 - 40, LOOP.y1 + 34], [LOOP.x1 + 16, LOOP.y0 + 20], [add(add(EA.o, EA.u, 100), EAp, -34)[0], add(add(EA.o, EA.u, 100), EAp, -34)[1]], [tk(.3, 50)[0], tk(.3, 50)[1]]].forEach(([x, y]) => {
+    [[LOOP.x0 + 70, LOOP.y0 - 20], [LOOP.x0 + 70, LOOP.y1 + 34], [LOOP.x0 + 150, LOOP.y1 + 34], [LOOP.x1 + 16, LOOP.y0 + 24], [add(add(EA.o, EA.u, 100), EAp, -34)[0], add(add(EA.o, EA.u, 100), EAp, -34)[1]], [tk(.3, 52)[0], tk(.3, 52)[1]], [CCD.x0 - 28, CCD.y1 + 30]].forEach(([x, y]) => {
       const g = S('g', {}, null);
       line(g, [x, y, 0], [x, y, 22], { stroke: '#8a8f99', 'stroke-width': 1 });
       const t = P(x, y, 22); S('ellipse', { cx: t[0], cy: t[1], rx: 3, ry: 1.2, fill: '#fff3c4' }, g);
@@ -466,7 +543,7 @@ window.IsoMap = (function () {
     });
   }
   function drawDumpster(objs) {
-    const g = S('g', {}, null); const x = LOOP.x0 + 2, y = LOOP.y1 + HW + 6;
+    const g = S('g', {}, null); const x = LOOP.x0 - 5, y = LOOP.y1 + HW + 14;
     poly(g, [[x, y], [x + 16, y], [x + 16, y + 12], [x, y + 12]], { fill: '#8a8f7a' });
     box(g, x + 3, y + 2, x + 13, y + 8, 0, 5, '#2f7f5a');
     objs.push({ depth: (y + 6) - (x + 8), node: g });
@@ -485,17 +562,15 @@ window.IsoMap = (function () {
   const inRect = (p, R, m) => p[0] > R.x0 - m && p[0] < R.x1 + m && p[1] > R.y0 - m && p[1] < R.y1 + m;
   const inPoly = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
   function treeOk(p) {
-    if (inRect(p, CHURCH, 10) || inRect(p, CCD, 10) || inRect(p, RECTORY, 8) || inRect(p, HAMMERHEAD, 6)) return false;
+    if (inRect(p, CHURCH, 10) || inRect(p, CCD, 30) || inRect(p, RECTORY, 4)) return false;
     if (inRect(p, { x0: COURTS[0].x0, y0: COURTS[0].y0, x1: COURTS[1].x1, y1: COURTS[1].y1 }, 10)) return false;
     if (inRect(p, { x0: LOOP.x0 - HW - DEPTH, y0: LOOP.y0 - HW - DEPTH, x1: LOOP.x1 + HW, y1: LOOP.y1 + HW + DEPTH }, 5)) return false;
     if (inRect(p, { x0: LOOP.x1 - 10, y0: 230, x1: 520, y1: LOOP.y1 + HW + DEPTH }, 5)) return false;     // east aisle and its rows
     const t = tOf(p), k = kOf(p);
     if (t > .0 && t < .6 && k > -12 && k < 92) return false;                                                // pond, pond row, entry drive, bridge walk
-    if (inPoly(p, BASIN) || inPoly(p, GRAVEL.concat([])) ) return false;
+    if (inPoly(p, BASIN)) return false;
+    if (t > -.12 && t < .07 && k > 6 && k < 200) return false;                                               // existing drive, turnaround and the house
     if (inRect(p, { x0: FUTURE[0][0] + 20, y0: FUTURE[0][1] + 18, x1: FUTURE[1][0] - 20, y1: FUTURE[2][1] - 18 }, 0)) return false;   // keep the label readable
-    const ex = tk(.03, 14), hh = [HAMMERHEAD.x1, (HAMMERHEAD.y0 + HAMMERHEAD.y1) / 2];                      // existing drive
-    const dx = hh[0] - ex[0], dy = hh[1] - ex[1], L2 = dx * dx + dy * dy, s0 = Math.max(0, Math.min(1, ((p[0] - ex[0]) * dx + (p[1] - ex[1]) * dy) / L2));
-    if (Math.hypot(p[0] - ex[0] - dx * s0, p[1] - ex[1] - dy * s0) < 12) return false;
     return true;
   }
   function drawTrees(objs) {
@@ -609,7 +684,7 @@ window.IsoMap = (function () {
     courts: () => P(COURTS[0].x0 + 6, cyc - 4, 34),
     parking: () => P(LOOP.x0 + 60, LOOP.y1 + 24, 24),
     pond: () => { const c = tk(.2, 26); return P(c[0], c[1], 30); },
-    rectory: () => P((RECTORY.x0 + RECTORY.x1) / 2, RECTORY.y0 + 15, RECTORY.h + RECTORY.rh + 24)
+    rectory: () => P(RECTORY.c[0], RECTORY.c[1], RECTORY.h + RECTORY.rh + 24)
   };
   function drawTags() {
     window.DATA.items.forEach((it, i) => {

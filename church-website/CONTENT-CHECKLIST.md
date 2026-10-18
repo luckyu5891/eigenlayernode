@@ -12,7 +12,8 @@ Edit locations: `assets/js/config.js` (church details), `assets/js/data.js` (fac
 | `ccd-rendering.jpg` | CCD building card | The gray building rendering |
 | `courts.jpg` | Basketball courts card | Optional. A rendering or a photo of a similar court |
 | `parking.jpg` | Parking card | Optional |
-| `pond.jpg` | Detention ponds card | Optional. A photo of the site or a similar pond |
+| `pond.jpg` | Detention pond card | Optional. A photo of the site or a similar pond |
+| `rectory.jpg` | Rectory card | Optional. A photo of the existing house |
 | `logo.png` | Header mark | Square, transparent background if possible |
 | `st-alphonsa.jpg` | Reserved for a future saint page | Optional |
 

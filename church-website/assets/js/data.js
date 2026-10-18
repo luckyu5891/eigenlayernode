@@ -53,30 +53,30 @@ window.DATA = {
       ]
     },
     {
-      id: 'parking', name: 'Parking', kind: 'Loop drive and parking bays', icon: '🚗',
+      id: 'parking', name: 'Parking', kind: 'Loop drive, pond lane and parking bays', icon: '🚗',
       game: 'parking', gameName: 'Park It', gameBlurb: 'Steer into the marked space without a scratch. Three levels.',
       imageKey: 'parking',
       meta: [
-        ['Spaces', 'About 120'],                                                // PLACEHOLDER verify exact count
-        ['Accessible', '8'],                                                    // PLACEHOLDER
-        ['Car entrance', 'Right-hand end of the frontage, off CR 175'], ['Layout', 'One-way loop']
+        ['Spaces', 'About 120'],                                                // from the civil site plan
+        ['Accessible', '11'],                                                   // 4 by the church, 7 by the CCD building
+        ['Car entrance', 'Right-hand end of the frontage, off CR 175'], ['Layout', 'Loop round the church plus a lane along the pond']
       ],
-      description: 'Cars enter from County Road 175 at the right-hand end of the frontage as you look in from the road, cross the pond on a culvert, pass a row of extra parking, and join a one-way loop that wraps around the church with parking bays on both sides, so drop-off is easy and nobody reverses into traffic.',   // PLACEHOLDER
+      description: 'Cars enter from County Road 175 at the right-hand end of the frontage as you look in from the road, follow the lane along the pond past a curved row of spaces, and either turn into the loop that sweeps round the front of the church or carry on past the walkers\' plaza to the rows in the east field. Nose-in spaces line the inside of the loop, with a walkway between them and the church.',
       facts: [
         'Walkers get a grand entrance right in the centre: wide steps up from the road, a landing, a 20 ft wooden arch bridge over the pond, and a lamp-lit promenade straight to the church doors.',
-        'The whole loop is one way, so nobody has to reverse into traffic.',
-        'A row of additional parking along the entrance drive is planned for feast days and future growth.'
+        'The loop is one way, so nobody has to reverse into traffic, and the accessible spaces sit right by the church doors and the CCD entrance.',
+        'The lane along the pond and the rows in the east field take the overflow on feast days.'
       ]
     },
     {
-      id: 'pond', name: 'Detention Pond', kind: 'Long stormwater pond and footbridge', icon: '🌊',
+      id: 'pond', name: 'Detention Pond', kind: 'Stormwater pond, footbridge and filtration basin', icon: '🌊',
       game: 'fishing', gameName: 'Gone Fishing', gameBlurb: 'Tap to cast, tap on the bite, hold to reel. Every catch unlocks a fact.',
       imageKey: 'pond',
       meta: [
-        ['Shape', 'One long pond along the road'], ['Depth', '3 to 4 ft'],
+        ['Shape', 'Wide by the entrance, tapering along the road'], ['Depth', '3 to 4 ft'],
         ['Footbridge', '20 ft wooden arch'], ['Purpose', 'Flood control']
       ],
-      description: 'A long, shallow pond runs the full length of the road frontage. It holds the rush of water after a Texas storm and lets it out slowly, keeping the road and the neighbours safe. Walkers cross it on a wooden arch bridge lit by lamp posts, right on the centre line of the church, and cars cross on the entrance drive at the right-hand end.',
+      description: 'A shallow pond runs along the road frontage, widest beside the car entrance and tapering toward the middle of the site, where a wooden arch bridge lit by lamp posts carries walkers over it on the centre line of the church. Beyond the bridge a flatter filtration basin cleans the runoff before it leaves the site. Together they hold the rush of water after a Texas storm and let it out slowly, keeping the road and the neighbours safe.',
       facts: [
         'Texas storms can drop inches of rain in an hour. The basin holds that surge and lets it out slowly.',
         'In a dry spell it turns into a green meadow, with the bridge as the welcome gate for anyone arriving on foot.',

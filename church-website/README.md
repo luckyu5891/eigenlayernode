@@ -1,6 +1,6 @@
 # St. Alphonsa Campus Website
 
-An interactive, phone-first website for the new St. Alphonsa Syro-Malabar Catholic Church campus at 3600 Co Rd 175, Leander, TX. The home page is an isometric map of the site drawn from the civil plan. Tap a place and it lifts off the map with a detail card of facts. Every place has a game, and finishing all five stamps a Campus Passport.
+An interactive, phone-first website for the new St. Alphonsa Syro-Malabar Catholic Church campus at 3600 Co Rd 175, Leander, TX. The home page is an isometric map of the site drawn from the civil plan. Tap a place and it lifts off the map with a detail card of facts. The church, CCD building, courts, parking and pond each have a game, and finishing all five stamps a Campus Passport. The rectory has a card only.
 
 No build step, no framework, no database. Plain HTML, CSS, and JavaScript. Progress is saved in the visitor's browser.
 
@@ -47,7 +47,7 @@ Colours and fonts are CSS variables at the top of `assets/css/style.css`.
 
 ## How the map is built
 
-`assets/js/iso-map.js` holds a small site model in feet (building footprints, the loop drive, parking bays, courts, the road frontage) and projects it to an isometric view at load time. Moving a building means changing a few numbers at the top of that file. Item ids (`church`, `ccd`, `courts`, `parking`, `pond`) tie the map, the cards, the games, and the passport together, so keep them unchanged.
+`assets/js/iso-map.js` holds a site model in feet digitised from the civil site plan (property corners, building footprints, the loop drive, the pond lane, parking rows, courts, the rectory) and projects it to an isometric view at load time. Plan pixels are converted with the `M()` helper at the top of the file, so a building can be moved by editing its plan coordinates. Item ids (`church`, `ccd`, `courts`, `parking`, `pond`, `rectory`) tie the map, the cards, the games, and the passport together, so keep them unchanged. An item with `info: true` in `data.js` gets a card but no game or stamp.
 
 ## Files
 

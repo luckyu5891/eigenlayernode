@@ -60,6 +60,7 @@ window.CHURCH = {
     courts: 'assets/img/courts.jpg',
     parking: 'assets/img/parking.jpg',
     pond: 'assets/img/pond.jpg',
+    rectory: 'assets/img/rectory.jpg',
     saint: 'assets/img/st-alphonsa.jpg'
   }
 };

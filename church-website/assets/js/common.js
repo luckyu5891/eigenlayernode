@@ -24,6 +24,7 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const item = id => D.items.find(i => i.id === id);
+  const gameItems = () => D.items.filter(i => !i.info);
   function safeGet(k, f) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : f; } catch (e) { return f; } }
   function safeSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
@@ -37,7 +38,7 @@
       p.stamps[id] = { at: Date.now(), label: label || '' }; safeSet(STORE_KEY, p);
       document.dispatchEvent(new CustomEvent('passport:change'));
       Toast.show(`Passport stamped: ${item(id).name}`, 'gold'); Sfx.play('stamp');
-      if (this.count() === D.items.length) setTimeout(() => Toast.show('All five stamps! Open your Passport for your certificate and prize.', 'gold', 5000), 1400);
+      if (this.count() === gameItems().length) setTimeout(() => Toast.show('All five stamps! Open your Passport for your certificate and prize.', 'gold', 5000), 1400);
       return true;
     },
     best(key, value, lowerIsBetter) {
@@ -145,17 +146,17 @@
     updateCount(); document.addEventListener('passport:change', updateCount);
     document.title = document.title.replace('{church}', C.name);
   }
-  function updateCount() { const n = $('#passport-count'); if (n) n.textContent = `${Passport.count()}/${D.items.length}`; }
+  function updateCount() { const n = $('#passport-count'); if (n) n.textContent = `${Passport.count()}/${gameItems().length}`; }
 
   function openPassport() {
-    const p = Passport.get(); const all = Passport.count() === D.items.length;
-    const stamps = D.items.map(i => `<div class="stamp ${p.stamps[i.id] ? 'done' : ''}"><span><span class="ico">${p.stamps[i.id] ? i.icon : '·'}</span>${esc(i.name)}</span></div>`).join('');
+    const p = Passport.get(); const all = Passport.count() === gameItems().length;
+    const stamps = gameItems().map(i => `<div class="stamp ${p.stamps[i.id] ? 'done' : ''}"><span><span class="ico">${p.stamps[i.id] ? i.icon : '·'}</span>${esc(i.name)}</span></div>`).join('');
     const scores = Object.entries(p.scores).map(([k, v]) => `<li><strong>${esc(k)}</strong>: ${/seconds/.test(k) ? fmtTime(v) : v}</li>`).join('');
     Modal.open(`
       <h2>Campus Passport</h2>
       <p class="muted">Finish the game in each of the five places to earn its stamp. Saved on this device.</p>
       <div class="passport-grid">${stamps}</div>
-      <div class="progress"><span style="width:${Passport.count() / D.items.length * 100}%"></span></div>
+      <div class="progress"><span style="width:${Passport.count() / gameItems().length * 100}%"></span></div>
       ${all ? `<div class="card sand" style="margin-top:16px"><h3>Certificate of Exploration</h3><p>You have explored every corner of the new ${esc(C.shortName)} campus. ${esc(C.prizeText || '')}</p><p class="verse">Well done, good and faithful servant.<br><span class="verse-ref">Matthew 25:23</span></p></div>` : ''}
       ${scores ? `<div class="divider"></div><h3>Best scores</h3><ul class="scores">${scores}</ul>` : ''}
       <div class="btn-row" style="margin-top:16px"><button class="btn ghost sm" type="button" id="passport-reset">Reset progress</button></div>`);

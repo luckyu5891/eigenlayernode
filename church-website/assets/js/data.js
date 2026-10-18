@@ -82,6 +82,20 @@ window.DATA = {
         'In a dry spell it turns into a green meadow, with the bridge as the welcome gate for anyone arriving on foot.',
         'Fishing is strictly a game here. Please admire the ducks from the bridge.'
       ]
+    },
+    {
+      id: 'rectory', name: 'Rectory', kind: 'Existing residence where the parish priest lives', icon: '🏠',
+      info: true, imageKey: 'rectory',
+      meta: [
+        ['Where', 'Right-hand side of the property, near the road'], ['Status', 'Existing building'],
+        ['Who lives here', 'The parish priest'], ['Access', 'Own drive off the entrance']
+      ],
+      description: 'The house that already stood on the land when the parish bought it is now the rectory, the home of our parish priest. It sits on the right-hand side as you look in from County Road 175, with its own short drive and a turnaround for fire trucks. The church and the CCD building are being built beside it.',
+      facts: [
+        'A rectory is simply the house where the priest of a parish lives. The word comes from rector, an old title for the priest in charge.',
+        'Having the priest living on the campus means the church is never far from a helping hand, day or night.',
+        'The house was blessed when the parish took over the land, before any of the new buildings were started.'
+      ]
     }
   ],
 

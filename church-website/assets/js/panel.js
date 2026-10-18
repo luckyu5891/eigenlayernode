@@ -40,15 +40,15 @@ window.Games = window.Games || {};
         <div class="meta">${it.meta.map(([k, v]) => `<div><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('')}</div>
         <p class="desc">${esc(it.description)}</p>
         <details><summary>Did you know?</summary><ul>${it.facts.map(f => `<li>${esc(f)}</li>`).join('')}</ul></details>
-        <div class="play-card">
+        ${it.info ? '<div class="stamped-note muted" style="color:var(--ink-soft)">Private home. Please admire it from the path.</div>' : `<div class="play-card">
           <span class="ico" aria-hidden="true">${gameIcon(it.game)}</span>
           <div><div class="t">${esc(it.gameName)}</div><div class="b">${esc(it.gameBlurb)}</div></div>
           <button class="btn gold" type="button" id="play-btn">${stamped ? 'Play again' : 'Play'}</button>
         </div>
-        ${stamped ? '<div class="stamped-note">★ Stamped in your Passport</div>' : '<div class="stamped-note muted" style="color:var(--ink-soft)">Finish the game to earn this stamp</div>'}
+        ${stamped ? '<div class="stamped-note">★ Stamped in your Passport</div>' : '<div class="stamped-note muted" style="color:var(--ink-soft)">Finish the game to earn this stamp</div>'}`}
         <div class="btn-row" style="margin-top:14px"><button class="btn secondary block" type="button" id="panel-back">← Back to map</button></div>`;
       this.body.scrollTop = 0;
-      $('#play-btn').addEventListener('click', () => { Sfx.play('tap'); Overlay.open(it.game, id); });
+      if ($('#play-btn')) $('#play-btn').addEventListener('click', () => { Sfx.play('tap'); Overlay.open(it.game, id); });
       $('#panel-back').addEventListener('click', () => { Sfx.play('tap'); this.close(); if (this.onClose) this.onClose(); });
       this.node.hidden = false; requestAnimationFrame(() => this.node.classList.add('open'));
     },

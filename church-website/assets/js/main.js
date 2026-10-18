@@ -102,7 +102,7 @@
   function renderLegend() {
     const ul = $('#legend'); ul.innerHTML = '';
     D.items.forEach(i => {
-      const b = el('button', { type: 'button', html: `<span class="ico" aria-hidden="true">${i.icon}</span><span><span class="name">${esc(i.name)}</span><br><span class="desc">${esc(i.gameName)} · ${esc(i.kind)}</span></span>${Passport.has(i.id) ? '<span class="star" title="Stamped">★</span>' : ''}` });
+      const b = el('button', { type: 'button', html: `<span class="ico" aria-hidden="true">${i.icon}</span><span><span class="name">${esc(i.name)}</span><br><span class="desc">${i.info ? esc(i.kind) : esc(i.gameName) + " · " + esc(i.kind)}</span></span>${!i.info && Passport.has(i.id) ? '<span class="star" title="Stamped">★</span>' : ''}` });
       b.addEventListener('click', () => openItem(i.id)); ul.append(el('li', {}, [b]));
     });
   }
